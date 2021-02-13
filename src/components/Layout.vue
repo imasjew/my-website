@@ -8,7 +8,7 @@
     >
       <el-menu-item index="dashboard">首页</el-menu-item>
       <el-menu-item index="shopping">购物</el-menu-item>
-      <el-menu-item index="music">音乐</el-menu-item>
+      <el-menu-item index="musiclist">音乐</el-menu-item>
       <el-menu-item index="game">游戏</el-menu-item>
       <el-submenu index="options" class="options">
         <template slot="title">个人中心</template>

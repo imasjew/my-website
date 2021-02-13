@@ -3,8 +3,8 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Layout from '@/components/Layout'
 import Dashboard from '@/components/routes/Dashboard'
-import Shopping from '@/components/routes/Shopping'
-import Music from '@/components/routes/Music'
+import Shopping from '@/components/routes/shopping/Shopping'
+import Musiclist from '@/components/routes/music/Musiclist'
 import Game from '@/components/routes/game/Game'
 import Errorpage from '@/components/errorpage'
 
@@ -39,7 +39,7 @@ const router = new Router({
         { path: '', redirect: 'shopping' },
         { path: 'dashboard', name: 'dashboard', component: Dashboard },
         { path: 'shopping', name: 'shopping', component: Shopping },
-        { path: 'music', name: 'music', component: Music },
+        { path: 'musiclist', name: 'musiclist', component: Musiclist },
         { path: 'game', name: 'game', component: Game }
       ]
     },
