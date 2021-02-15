@@ -15,10 +15,9 @@
         <el-menu-item index="options" disabled>资料设置</el-menu-item>
         <el-menu-item index="logout">注销</el-menu-item>
       </el-submenu>
-
     </el-menu>
     <!-- <span class="log-out" href="javascript:void(0)">注销</span> -->
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -28,46 +27,36 @@ export default {
   data() {
     return {
       activeIndex: "",
-      Routes: [
-        '/dashboard',
-        '/shopping',
-        '/music',
-        '/game',
-      ]
+      Routes: ["dashboard", "shopping", "music", "game"],
     };
   },
   created() {
-    this.activeIndex = this.$route.name;
+    // 查询当前路径隶属根路由，解决添加二级子路由时导航栏无选中状态bug
+    const rootRoute = this.checkSameRoutes();
+    this.activeIndex = rootRoute;
   },
   methods: {
     handleSelect: function (key) {
-      if (key === 'logout') {
-        localStorage.removeItem('username')
-        this.$router.push('/login');
+      if (key === "logout") {
+        localStorage.removeItem("username");
+        this.$router.push("/login");
         return;
       }
-      // 避免已在该标签下时额外跳转丢失子路由
-      const adress = 'home/' + key;
+      // 避免已在该标签下时，额外跳转，丢失子路由
+      const adress = "home/" + key;
       if (this.$route.fullPath.indexOf(adress) >= 0) {
         return;
       }
-              console.log(key);
-        console.log(this.$route.fullPath)
-  console.log(this.$route.fullPath.indexOf(adress))
-      this.$router.push('/home/' + key);
+      this.$router.push("/home/" + key);
     },
-    // selectPage: function (index) {
-    //   switch (index) {
-    //     case '1':
-    //       return 'dashboard';
-    //     case '2':
-    //       return 'shopping';
-    //     case '3':
-    //       return 'game';
-    //     default:
-    //       return '';
-    //   }
-    // }
+    checkSameRoutes: function () {
+      const routesLen = this.Routes.length;
+      for (let i = 0; i < routesLen; i++) {
+        if (this.$route.fullPath.indexOf(this.Routes[i]) >= 0) {
+          return this.Routes[i];
+        }
+      }
+    },
   },
 };
 </script>
