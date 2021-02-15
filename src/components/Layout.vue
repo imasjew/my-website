@@ -8,7 +8,7 @@
     >
       <el-menu-item index="dashboard">首页</el-menu-item>
       <el-menu-item index="shopping">购物</el-menu-item>
-      <el-menu-item index="musiclist">音乐</el-menu-item>
+      <el-menu-item index="music">音乐</el-menu-item>
       <el-menu-item index="game">游戏</el-menu-item>
       <el-submenu index="options" class="options">
         <template slot="title">个人中心</template>
@@ -27,20 +27,34 @@ export default {
   name: "layout",
   data() {
     return {
-      activeIndex: "1",
+      activeIndex: "",
+      Routes: [
+        '/dashboard',
+        '/shopping',
+        '/music',
+        '/game',
+      ]
     };
   },
   created() {
     this.activeIndex = this.$route.name;
   },
   methods: {
-    handleSelect: function (key, keyPath) {
+    handleSelect: function (key) {
       if (key === 'logout') {
         localStorage.removeItem('username')
         this.$router.push('/login');
         return;
       }
-      this.$router.push(key);
+      // 避免已在该标签下时额外跳转丢失子路由
+      const adress = 'home/' + key;
+      if (this.$route.fullPath.indexOf(adress) >= 0) {
+        return;
+      }
+              console.log(key);
+        console.log(this.$route.fullPath)
+  console.log(this.$route.fullPath.indexOf(adress))
+      this.$router.push('/home/' + key);
     },
     // selectPage: function (index) {
     //   switch (index) {
