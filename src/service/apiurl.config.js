@@ -1,5 +1,8 @@
-const MUSICURL = 'http://musicapi.leanapp.cn/';
+const MUSICURL = 'http://www.hjmin.com/';
 
 export const APIURL = {
-  music_list: MUSICURL + 'search?keywords=',
+  song_list: MUSICURL + 'search?keywords=',
+  song_url: MUSICURL + 'song/url?id=',
+  check_song: MUSICURL + 'check/music?id=',
+  get_album_info: MUSICURL + 'song/detail?ids='
 }

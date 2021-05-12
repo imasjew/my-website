@@ -2,7 +2,7 @@
   <div>
     <el-menu
       :default-active="activeIndex"
-      class="el-menu-demo"
+      class="el-menu-demo menu-color"
       mode="horizontal"
       @select="handleSelect"
     >
@@ -62,6 +62,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.menu-color {
+  background-color: gray;
+}
 .log-out {
   position: absolute;
   top: 27px;

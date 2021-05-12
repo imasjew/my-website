@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/components/Login'
-import Layout from '@/components/Layout'
-import Dashboard from '@/components/routes/Dashboard'
-import Shopping from '@/components/routes/shopping/Shopping'
-import Music from '@/components/routes/music/Music'
-import Musiclist from '@/components/routes/music/Musiclist'
-import Song from '@/components/routes/music/Song'
-import Game from '@/components/routes/game/Game'
-import Errorpage from '@/components/errorpage'
+import Login from '@/pages/Login'
+import Layout from '@/pages/Layout'
+import Dashboard from '@/pages/routes/Dashboard'
+import Shopping from '@/pages/routes/shopping/Shopping'
+import Music from '@/pages/routes/music/Music'
+import MusicList from '@/pages/routes/music/Musiclist'
+import Song from '@/pages/routes/music/Song'
+import Game from '@/pages/routes/game/Game'
+import Errorpage from '@/pages/errorpage'
 
 import VueRouter from 'vue-router'
 
@@ -44,7 +44,7 @@ const router = new Router({
         { path: 'music', name: 'music', component: Music,
           children: [
             { path: '', redirect: 'musiclist' },
-            { path: 'musiclist', name: 'musiclist', component: Musiclist },
+            { path: 'musiclist', name: 'musiclist', component: MusicList },
             { path: 'song', name: 'song', component: Song },
           ]
         },
