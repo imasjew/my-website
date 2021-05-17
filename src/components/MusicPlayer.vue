@@ -11,7 +11,7 @@
       ></playerlist>
       <div class="controll-btn">
         <i class="el-icon-download backward" @click="switchSong(1)"></i>
-        <i :class="playButtonType"></i>
+        <i :class="[playButtonType, 'play-btn']"></i>
         <i class="el-icon-download afterward" @click="switchSong(2)"></i>
       </div>
       <div class="album-pic">
@@ -27,6 +27,7 @@
             controls="controls"
             @ended="songLoop()"
             class="original-audio"
+            v-show="false"
           ></audio>
           <div class="process-container">
             <div
@@ -51,7 +52,38 @@
         </div>
       </div>
       <div class="right-controller">
-        <el-button @click="toggleList()">showL</el-button>
+        <div class="icon-wrapper" @click="toggleVolumeController()">
+          <img
+            class="volume-icon"
+            :src="volumeOn ? volumeOnIcon : volumeOffIcon"
+            alt=""
+          />
+          <div v-if="showVolumeController" class="volume-controller-container">
+            <div class="volume-controller-bar">
+              <div class="volume-controller-current"></div>
+              <div class="volume-controller-handle"></div>
+            </div>
+          </div>
+        </div>
+        <div class="icon-wrapper">
+          <div v-if="!loopList" class="loop-icon-num">1</div>
+          <i
+            :class="[
+              'loop-mode-icon',
+              loopList ? 'el-icon-refresh' : 'el-icon-refresh-left',
+            ]"
+            @click="toggleLoopMode()"
+          ></i>
+        </div>
+        <div class="icon-wrapper">
+          <i
+            :class="[
+              'show-list-icon',
+              showList ? 'el-icon-s-fold' : 'el-icon-s-unfold',
+            ]"
+            @click="toggleList()"
+          ></i>
+        </div>
       </div>
     </div>
   </div>
@@ -71,17 +103,21 @@ export default {
       albumPic: null,
       songList: [],
       isPlaying: false,
-      loopMode: 0,
+      loopList: true,
       showList: true,
       currentTime: 0,
       duration: 0,
       processChecker: null,
       processBarWidth: 500,
+      volumeOn: true,
+      showVolumeController: false,
+      volumeOnIcon: "/static/icon/volume-on.png",
+      volumeOffIcon: "/static/icon/volume-off.png",
     };
   },
   mounted() {
     this.audio = this.$refs.player;
-    this.audio.volume = 0.2;
+    this.audio.volume = 0.1;
   },
   created() {
     Bus.$on("playSong", (song) => {
@@ -157,7 +193,6 @@ export default {
         },
         (err) => {}
       );
-
       // 哪怕加一毫秒都能播放，直接播放就不行？
       this.isPlaying = true;
       setTimeout(() => {
@@ -193,18 +228,14 @@ export default {
       }
       this.playSong();
     },
+    toggleLoopMode() {
+      this.loopList = !this.loopList;
+    },
     songLoop() {
-      switch (this.loopMode) {
-        case 0:
-          this.switchSong(2);
-          break;
-        case 1:
-          this.playSong();
-          break;
-        case 2:
-          break;
-        default:
-          this.switchSong(2);
+      if (this.loopList) {
+        this.switchSong(2);
+      } else {
+        this.playSong();
       }
     },
     toggleList: function () {
@@ -232,28 +263,27 @@ export default {
       if (e.srcElement.className === "process-handle") {
         return;
       }
-      const processRate = (e.layerX - 4) / this.processBarWidth;
+      const processRate = (e.layerX) / this.processBarWidth;
       this.currentTime = this.duration * processRate;
       this.audio.currentTime = this.currentTime;
     },
     dragToTime: function (e) {
       e.preventDefault();
       clearInterval(this.processChecker);
-      let originHandleX = e.target.offsetLeft + 4; // border = 4px;
+      let originHandleX = e.target.offsetLeft + 8; // border = 4px;
       const mousedownX = e.clientX;
       document.onmousemove = (e) => {
-
-        let offset = e.clientX - mousedownX ;
+        let offset = e.clientX - mousedownX;
         let position = originHandleX + offset;
-        if (position <= 0 ) {
+        console.log('111')
+        if (position <= 0) {
           position = 0;
-          return;
+          console.log('---',position )
         }
-        if (position >= this.processBarWidth ) {
+        if (position >= this.processBarWidth) {
           position = this.processBarWidth;
-          return;
         }
-        this.currentTime = position / this.processBarWidth * this.duration;
+        this.currentTime = (position / this.processBarWidth) * this.duration;
       };
       document.onmouseup = (e) => {
         document.onmousemove = null;
@@ -263,6 +293,9 @@ export default {
           this.checkCurrentProcess();
         }, 200);
       };
+    },
+    toggleVolumeController() {
+      this.showVolumeController = !this.showVolumeController;
     },
   },
 };
@@ -276,29 +309,42 @@ export default {
   border-top: 1px solid black;
   box-shadow: 0 0 4px black;
   background-color: rgba(0, 0, 0, 0.75);
+  user-select: none;
 }
 .controller-wrapper {
   position: relative;
   width: 900px;
   margin: auto;
+  cursor: default;
   .controll-btn {
     position: relative;
     font-size: 26px;
     line-height: 50px;
-    color: white;
-    vertical-align: middle;
+    color: #bbb;
     display: inline-block;
-    cursor: pointer;
+    i {
+      cursor: pointer;
+    }
+    .play-btn {
+      font-size: 40px;
+      line-height: 36px;
+      color: #ddd;
+    }
     .backward {
+      line-height: 36px;
       transform: rotate(90deg);
     }
     .afterward {
+      line-height: 36px;
       transform: rotate(-90deg);
+    }
+    i {
+      vertical-align: middle;
     }
   }
   .album-pic {
     position: relative;
-    margin: 4px;
+    margin: 4px 8px;
     width: 50px;
     height: 50px;
     line-height: 50px;
@@ -333,7 +379,6 @@ export default {
     width: 600px;
     height: 50px;
     text-align: left;
-    border: 1px solid black;
     vertical-align: middle;
     display: inline-block;
     .song-title {
@@ -360,7 +405,6 @@ export default {
         .process-bar {
           position: relative;
           margin: 4px 0;
-          width: 500px;
           height: 8px;
           background-color: #151515;
           border-radius: 4px;
@@ -374,7 +418,7 @@ export default {
           }
           .process-handle {
             position: absolute;
-            margin-left: -4px;
+            margin-left: -8px;
             left: 0;
             top: -4px;
             width: 8px;
@@ -405,6 +449,75 @@ export default {
   .right-controller {
     position: relative;
     display: inline-block;
+    .icon-wrapper {
+      position: relative;
+      margin: auto 0 auto 8px;
+      display: inline-block;
+      cursor: pointer;
+      .volume-icon {
+        position: relative;
+        vertical-align: middle;
+        width: 20px;
+      }
+      .volume-controller-container {
+        position: absolute;
+        left: -6px;
+        top: -169px;
+        width: 30px;
+        height: 150px;
+        background-color: rgba(0, 0, 0, 0.6);
+        .volume-controller-bar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          margin: auto;
+          width: 6px;
+          height: 130px;
+          background-color: black;
+          border-radius: 4px;
+          .volume-controller-current {
+          }
+          .volume-controller-handle {
+            position: absolute;
+            left: -3px;
+            bottom: 0;
+            width: 6px;
+            height: 6px;
+            background-color: #c22;
+            border: 3px solid white;
+            border-radius: 8px;
+          }
+          .volume-controller-handle:hover {
+            background-color: #c33;
+            box-shadow: 0 0 6px white;
+          }
+        }
+      }
+      .loop-mode-icon {
+        position: relative;
+        vertical-align: middle;
+        font-size: 20px;
+        color: #bbb;
+        display: inline-block;
+      }
+      .loop-icon-num {
+        position: absolute;
+        color: #bbb;
+        left: 7px;
+        top: 4px;
+        font-size: 6px;
+        font-weight: 500;
+      }
+      .show-list-icon {
+        position: relative;
+        vertical-align: middle;
+        font-size: 20px;
+        color: #bbb;
+        display: inline-block;
+      }
+    }
   }
 }
 </style>

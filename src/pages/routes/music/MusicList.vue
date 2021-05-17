@@ -30,17 +30,27 @@
                 { playing: scope.$index == playingIndex },
               ]"
               @click="playSong(scope.$index, scope.row)"
-
             ></i>
           </template>
         </el-table-column>
-        <el-table-column prop="title" label="歌曲标题" width="500" :show-overflow-tooltip="true"> </el-table-column>
+        <el-table-column
+          prop="title"
+          label="歌曲标题"
+          width="500"
+          :show-overflow-tooltip="true"
+        >
+        </el-table-column>
         <el-table-column label="时长" width="100">
           <template slot-scope="scope">
             {{ scope.row.duration | formateDate }}
           </template>
         </el-table-column>
-        <el-table-column prop="author" label="作者" :show-overflow-tooltip="true"> </el-table-column>
+        <el-table-column
+          prop="author"
+          label="作者"
+          :show-overflow-tooltip="true"
+        >
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -138,30 +148,29 @@ export default {
   width: 900px;
   margin: 0 auto;
   .el-table td {
-  padding: 4px 0;
-  .el-icon-video-play {
-  font-size: 20px;
-  line-height: 28px;
-  color: #999;
-  cursor: pointer;
-}
-.el-icon-video-play:hover {
-  color: #555;
-  text-shadow: 0 0 1px #555;
-}
-.el-table::before {
-  height: 0; // 去除底部白线，会遮盖底部组件
-}
-.playing {
-  color: #C44;
-  text-shadow: 0 0 1px #C44;
-}
-.playing:hover {
-  color: #C44;
-  text-shadow: 0 0 1px #C44;
-}
-}
-}
+    padding: 4px 0;
+    .el-icon-video-play {
+      font-size: 20px;
+      line-height: 28px;
+      color: #999;
+      cursor: pointer;
+    }
+    .el-icon-video-play:hover {
+      color: #555;
+      text-shadow: 0 0 1px #555;
+    }
 
-
+    .playing {
+      color: #c44;
+      text-shadow: 0 0 1px #c44;
+    }
+    .playing:hover {
+      color: #c44;
+      text-shadow: 0 0 1px #c44;
+    }
+  }
+  .el-table::before {
+    height: 0; // 去除底部白线，会遮盖底部组件
+  }
+}
 </style>
