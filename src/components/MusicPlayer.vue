@@ -11,7 +11,10 @@
       ></playerlist>
       <div class="controll-btn">
         <i class="el-icon-download backward" @click="switchSong(1)"></i>
-        <i :class="[playButtonType, 'play-btn']"></i>
+        <i
+          :class="[playButtonType, 'play-btn']"
+          @click="isPlaying ? pauseSong() : playSong()"
+        ></i>
         <i class="el-icon-download afterward" @click="switchSong(2)"></i>
       </div>
       <div class="album-pic">
@@ -30,21 +33,16 @@
             v-show="false"
           ></audio>
           <div class="process-container">
-            <div
-              class="process-bar"
-              @mousedown="goToTime($event)"
-              :style="{ width: processBarWidth + 'px' }"
-            >
-              <div
-                class="process-current"
-                :style="{ width: processHandlePosition + '%' }"
-              ></div>
-              <div
-                class="process-handle"
-                :style="{ left: processHandlePosition + '%' }"
-                @mousedown="dragToTime($event)"
-              ></div>
-            </div>
+            <Slider
+              :barLength="processBarWidth"
+              :handleSize="processHandleSize"
+              :currentPosition="processHandlePosition"
+              :forbidden="duration == 0"
+              @setPosition="setProcess($event)"
+              @dragMouseDown="dragMouseDown()"
+              @dragMouseMove="dragMouseMove($event)"
+              @dragMouseUp="dragMouseUp()"
+            ></Slider>
           </div>
           <div class="process-duration" @click="test()">
             {{ currentTime | formateDate }} / {{ duration | formateDate }}
@@ -91,28 +89,30 @@
 
 <script>
 import playerlist from "@/components/PlayerList.vue";
+import Slider from "@/components/Slider.vue";
 import httpService from "@/service/http.service";
 import Bus from "@/eventBus.js";
 export default {
   name: "musicplayer",
-  components: { playerlist },
+  components: { playerlist, Slider },
   data() {
     return {
-      audio: "",
-      currentIndex: 0,
-      albumPic: null,
-      songList: [],
-      isPlaying: false,
-      loopList: true,
-      showList: true,
-      currentTime: 0,
-      duration: 0,
-      processChecker: null,
-      processBarWidth: 500,
-      volumeOn: true,
+      audio: "", // 音频资源
+      currentIndex: 0, // 当前播放编号
+      albumPic: null, // 专辑封面
+      songList: [], // 歌单
+      isPlaying: false, // 播放状态
+      loopList: true, // 列表循环开罐
+      showList: false, // 列表显示开关
+      currentTime: 0, // 当前进度
+      duration: 0, // 歌曲总时长
+      processChecker: null, // 走条计时器
+      processBarWidth: 500, // 进度条宽
+      processHandleSize: 16, // 进度按钮尺寸
+      volumeOn: true, // 音量开关
       showVolumeController: false,
-      volumeOnIcon: "/static/icon/volume-on.png",
-      volumeOffIcon: "/static/icon/volume-off.png",
+      volumeOnIcon: "/static/icon/volume-on.png", // 音量开图标
+      volumeOffIcon: "/static/icon/volume-off.png", // 音量关图标
     };
   },
   mounted() {
@@ -152,11 +152,6 @@ export default {
     },
   },
   methods: {
-    test: function () {
-      console.log(this.audio.duration);
-      console.log(this.audio.currentTime);
-      console.log(this.audio.volume);
-    },
     addSong: function (song) {
       if (!song.url) {
         this.pauseSong();
@@ -202,14 +197,14 @@ export default {
         this.checkCurrentProcess();
       }, 200);
     },
-    checkCurrentProcess: function () {
-      this.duration = this.audio.duration;
-      this.currentTime = this.audio.currentTime;
-    },
     pauseSong: function () {
       this.isPlaying = false;
       this.audio.pause();
       clearInterval(this.processChecker);
+    },
+    checkCurrentProcess: function () {
+      this.duration = this.audio.duration;
+      this.currentTime = this.audio.currentTime;
     },
     switchSong: function (type) {
       if (type === 1) {
@@ -255,44 +250,21 @@ export default {
       this.currentIndex = index;
       this.playSong();
     },
-    goToTime: function (e) {
-      console.log(e);
-      if (this.duration === 0) {
-        return;
-      }
-      if (e.srcElement.className === "process-handle") {
-        return;
-      }
-      const processRate = (e.layerX) / this.processBarWidth;
-      this.currentTime = this.duration * processRate;
+    setProcess(barRate) {
+      this.currentTime = this.duration * barRate;
       this.audio.currentTime = this.currentTime;
     },
-    dragToTime: function (e) {
-      e.preventDefault();
+    dragMouseDown() {
       clearInterval(this.processChecker);
-      let originHandleX = e.target.offsetLeft + 8; // border = 4px;
-      const mousedownX = e.clientX;
-      document.onmousemove = (e) => {
-        let offset = e.clientX - mousedownX;
-        let position = originHandleX + offset;
-        console.log('111')
-        if (position <= 0) {
-          position = 0;
-          console.log('---',position )
-        }
-        if (position >= this.processBarWidth) {
-          position = this.processBarWidth;
-        }
-        this.currentTime = (position / this.processBarWidth) * this.duration;
-      };
-      document.onmouseup = (e) => {
-        document.onmousemove = null;
-        document.onmouseup = null;
-        this.audio.currentTime = this.currentTime;
-        this.processChecker = setInterval(() => {
-          this.checkCurrentProcess();
-        }, 200);
-      };
+    },
+    dragMouseMove(barRate) {
+      this.currentTime = barRate * this.duration;
+    },
+    dragMouseUp() {
+      this.audio.currentTime = this.currentTime;
+      this.processChecker = setInterval(() => {
+        this.checkCurrentProcess();
+      }, 200);
     },
     toggleVolumeController() {
       this.showVolumeController = !this.showVolumeController;
@@ -402,37 +374,6 @@ export default {
       .process-container {
         position: relative;
         display: inline-block;
-        .process-bar {
-          position: relative;
-          margin: 4px 0;
-          height: 8px;
-          background-color: #151515;
-          border-radius: 4px;
-          box-shadow: 0 1px 1px #444, 0 2px 2px black inset;
-          .process-current {
-            position: relative;
-            height: 8px;
-            border-radius: 4px;
-            box-shadow: 0 1px 1px #f55 inset, 0 2px 2px #111;
-            background-color: #c22;
-          }
-          .process-handle {
-            position: absolute;
-            margin-left: -8px;
-            left: 0;
-            top: -4px;
-            width: 8px;
-            height: 8px;
-            border: 4px solid white;
-            background-color: #c22;
-            border-radius: 8px;
-            box-shadow: 0 2px 2px #111;
-          }
-          .process-handle:hover {
-            background-color: #c33;
-            box-shadow: 0 0 6px white;
-          }
-        }
       }
       .process-duration {
         position: relative;
@@ -477,8 +418,6 @@ export default {
           height: 130px;
           background-color: black;
           border-radius: 4px;
-          .volume-controller-current {
-          }
           .volume-controller-handle {
             position: absolute;
             left: -3px;

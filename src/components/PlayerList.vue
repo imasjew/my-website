@@ -13,7 +13,6 @@
         </td>
         <td class="song-title">{{ song.title }}</td>
         <td class="song-author">{{ song.author }}</td>
-        <!-- <td>{{ song.albumId }}</td> -->
         <td>
           <i
             class="el-icon-delete delete-btn"
