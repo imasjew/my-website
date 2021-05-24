@@ -5,7 +5,7 @@
       <li
         v-for="(song, index) in songList"
         :key="song.url"
-        @click="playSong(index)"
+        @click="playSong($event, index)"
         class="song-info"
       >
         <td class="playing-status">
@@ -15,7 +15,7 @@
         <td class="song-author">{{ song.author }}</td>
         <td>
           <i
-            class="el-icon-delete delete-btn"
+            class="el-icon-delete"
             @click="remove(index)"
             v-if="index !== currentIndex"
           ></i>
@@ -38,7 +38,10 @@ export default {
     remove: function (index) {
       this.$emit("remove", index);
     },
-    playSong: function (index) {
+    playSong: function (e, index) {
+      if (e.srcElement.className === "el-icon-delete") {
+        return;
+      }
       this.$emit("play", index);
     },
   },
@@ -94,13 +97,13 @@ export default {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      .delete-btn {
+      .el-icon-delete {
         display: none;
       }
     }
     .song-info:hover {
       background-color: #444;
-      .delete-btn {
+      .el-icon-delete {
         display: inline-block;
       }
     }

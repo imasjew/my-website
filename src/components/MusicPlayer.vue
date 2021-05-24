@@ -1,5 +1,5 @@
 <template>
-  <div id="wrapper">
+  <div id="music-player-wrapper" @click.stop>
     <div class="controller-wrapper">
       <playerlist
         ref="playerlist"
@@ -55,15 +55,11 @@
         <div class="icon-wrapper">
           <img
             class="volume-icon"
-             @click="toggleVolumeController($event)"
+            @click="toggleVolumeController($event)"
             :src="volumeOn ? volumeOnIcon : volumeOffIcon"
             alt=""
           />
           <div v-if="showVolumeController" class="volume-controller-container">
-            <!-- <div class="volume-controller-bar">
-              <div class="volume-controller-current"></div>
-              <div class="volume-controller-handle"></div>
-            </div> -->
             <Slider
               :barLength="130"
               :barWeight="6"
@@ -167,6 +163,7 @@ export default {
     },
   },
   methods: {
+    test() {},
     addSong: function (song) {
       if (!song.url) {
         this.pauseSong();
@@ -195,6 +192,9 @@ export default {
       }
     },
     playSong: function () {
+      if (this.songList.length === 0) {
+        return;
+      }
       clearInterval(this.processChecker);
       const song = this.songList[this.currentIndex];
       httpService.getAlbumInfo(song.id).then(
@@ -252,7 +252,6 @@ export default {
       this.showList = !this.showList;
     },
     removeListSong: function (index) {
-      console.log(index, this.currentIndex);
       if (this.currentIndex === index) {
         return;
       }
@@ -260,6 +259,7 @@ export default {
         this.currentIndex--;
       }
       this.songList.splice(index, 1);
+
     },
     playListSong: function (index) {
       this.currentIndex = index;
@@ -286,24 +286,39 @@ export default {
     setVolume(barRate) {
       this.currentVolume = this.maxVolume * barRate;
       this.audio.volume = barRate;
-        this.volumeOn = barRate !== 0;
+      this.volumeOn = barRate !== 0;
     },
     dragVolumeMouseMove(barRate) {
       this.setVolume(barRate);
     },
     toggleVolumeController(e) {
-      console.log('e', e.srcElement.className)
+      // 避免点击控制条时触发
       if (e.srcElement.className !== "volume-icon") {
         return;
       }
       this.showVolumeController = !this.showVolumeController;
+      if (this.showVolumeController) {
+        document.body.addEventListener(
+          "click",
+          this.removeVolumeController,
+          false
+        );
+      }
+    },
+    removeVolumeController() {
+      this.showVolumeController = false;
+      document.body.removeEventListener(
+        "click",
+        this.removeVolumeController,
+        false
+      );
     },
   },
 };
 </script>
 
 <style lang="less">
-#wrapper {
+#music-player-wrapper {
   position: relative;
   width: 100%;
   text-align: center;

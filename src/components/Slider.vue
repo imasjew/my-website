@@ -27,7 +27,6 @@ export default {
       isPlaying: false,
     };
   },
-  created() {},
   computed: {
     barContainerSize() {
       if (this.verticalMode) {
