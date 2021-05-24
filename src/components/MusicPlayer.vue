@@ -34,14 +34,16 @@
           ></audio>
           <div class="process-container">
             <Slider
-              :barLength="processBarWidth"
-              :handleSize="processHandleSize"
+              :barLength="500"
+              :barWeight="8"
+              :verticalMode="false"
               :currentPosition="processHandlePosition"
               :forbidden="duration == 0"
+              :autoPlay="true"
               @setPosition="setProcess($event)"
-              @dragMouseDown="dragMouseDown()"
-              @dragMouseMove="dragMouseMove($event)"
-              @dragMouseUp="dragMouseUp()"
+              @dragMouseDown="dragProcessMouseDown()"
+              @dragMouseMove="dragProcessMouseMove($event)"
+              @dragMouseUp="dragProcessMouseUp()"
             ></Slider>
           </div>
           <div class="process-duration" @click="test()">
@@ -50,17 +52,28 @@
         </div>
       </div>
       <div class="right-controller">
-        <div class="icon-wrapper" @click="toggleVolumeController()">
+        <div class="icon-wrapper">
           <img
             class="volume-icon"
+             @click="toggleVolumeController($event)"
             :src="volumeOn ? volumeOnIcon : volumeOffIcon"
             alt=""
           />
           <div v-if="showVolumeController" class="volume-controller-container">
-            <div class="volume-controller-bar">
+            <!-- <div class="volume-controller-bar">
               <div class="volume-controller-current"></div>
               <div class="volume-controller-handle"></div>
-            </div>
+            </div> -->
+            <Slider
+              :barLength="130"
+              :barWeight="6"
+              :verticalMode="true"
+              :currentPosition="volumeHandlePosition"
+              :forbidden="false"
+              :autoPlay="false"
+              @setPosition="setVolume($event)"
+              @dragMouseMove="dragVolumeMouseMove($event)"
+            ></Slider>
           </div>
         </div>
         <div class="icon-wrapper">
@@ -107,17 +120,16 @@ export default {
       currentTime: 0, // 当前进度
       duration: 0, // 歌曲总时长
       processChecker: null, // 走条计时器
-      processBarWidth: 500, // 进度条宽
-      processHandleSize: 16, // 进度按钮尺寸
       volumeOn: true, // 音量开关
-      showVolumeController: false,
+      showVolumeController: false, // 显示音量滑块
+      currentVolume: 100, // 当前音量
+      maxVolume: 100, // 最大音量
       volumeOnIcon: "/static/icon/volume-on.png", // 音量开图标
       volumeOffIcon: "/static/icon/volume-off.png", // 音量关图标
     };
   },
   mounted() {
     this.audio = this.$refs.player;
-    this.audio.volume = 0.1;
   },
   created() {
     Bus.$on("playSong", (song) => {
@@ -149,6 +161,9 @@ export default {
       } else {
         return (this.currentTime / this.duration) * 100;
       }
+    },
+    volumeHandlePosition: function () {
+      return (this.currentVolume / this.maxVolume) * 100;
     },
   },
   methods: {
@@ -250,23 +265,37 @@ export default {
       this.currentIndex = index;
       this.playSong();
     },
+    // 进度条控制组件
     setProcess(barRate) {
       this.currentTime = this.duration * barRate;
       this.audio.currentTime = this.currentTime;
     },
-    dragMouseDown() {
+    dragProcessMouseDown() {
       clearInterval(this.processChecker);
     },
-    dragMouseMove(barRate) {
+    dragProcessMouseMove(barRate) {
       this.currentTime = barRate * this.duration;
     },
-    dragMouseUp() {
+    dragProcessMouseUp() {
       this.audio.currentTime = this.currentTime;
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
       }, 200);
     },
-    toggleVolumeController() {
+    // 音量控制组件
+    setVolume(barRate) {
+      this.currentVolume = this.maxVolume * barRate;
+      this.audio.volume = barRate;
+        this.volumeOn = barRate !== 0;
+    },
+    dragVolumeMouseMove(barRate) {
+      this.setVolume(barRate);
+    },
+    toggleVolumeController(e) {
+      console.log('e', e.srcElement.className)
+      if (e.srcElement.className !== "volume-icon") {
+        return;
+      }
       this.showVolumeController = !this.showVolumeController;
     },
   },
@@ -402,37 +431,14 @@ export default {
       }
       .volume-controller-container {
         position: absolute;
+        padding-top: 16px;
+        padding-bottom: 0px;
         left: -6px;
-        top: -169px;
+        top: -180px;
         width: 30px;
-        height: 150px;
+        height: 145px;
         background-color: rgba(0, 0, 0, 0.6);
-        .volume-controller-bar {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          margin: auto;
-          width: 6px;
-          height: 130px;
-          background-color: black;
-          border-radius: 4px;
-          .volume-controller-handle {
-            position: absolute;
-            left: -3px;
-            bottom: 0;
-            width: 6px;
-            height: 6px;
-            background-color: #c22;
-            border: 3px solid white;
-            border-radius: 8px;
-          }
-          .volume-controller-handle:hover {
-            background-color: #c33;
-            box-shadow: 0 0 6px white;
-          }
-        }
+        cursor: default;
       }
       .loop-mode-icon {
         position: relative;
