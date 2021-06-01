@@ -6,7 +6,7 @@ import Dashboard from '@/pages/routes/Dashboard'
 import Shopping from '@/pages/routes/shopping/Shopping'
 import Music from '@/pages/routes/music/Music'
 import MusicList from '@/pages/routes/music/Musiclist'
-import Song from '@/pages/routes/music/Song'
+import MusicLyric from '@/pages/routes/music/MusicLyric'
 import Game from '@/pages/routes/game/Game'
 import Errorpage from '@/pages/errorpage'
 
@@ -45,7 +45,7 @@ const router = new Router({
           children: [
             { path: '', redirect: 'musiclist' },
             { path: 'musiclist', name: 'musiclist', component: MusicList },
-            { path: 'song', name: 'song', component: Song },
+            { path: 'musiclyric', name: 'musiclyric', component: MusicLyric },
           ]
         },
         { path: 'game', name: 'game', component: Game }

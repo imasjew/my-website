@@ -1,14 +1,14 @@
 <template>
   <div id="music-player-wrapper" @click.stop>
     <div class="controller-wrapper">
-      <playerlist
-        ref="playerlist"
+      <playlist
+        ref="playlist"
         :songList="songList"
         :currentIndex="currentIndex"
         :showList="showList"
         @remove="removeListSong($event)"
         @play="playListSong($event)"
-      ></playerlist>
+      ></playlist>
       <div class="controll-btn">
         <i class="el-icon-download backward" @click="switchSong(1)"></i>
         <i
@@ -22,7 +22,9 @@
         <div class="img-mask"></div>
       </div>
       <div class="main-info">
-        <div class="song-title">{{ title }}</div>
+        <div class="song-title-wrapper">
+          <span class="song-title" @click="goToLyric()">{{ title }}</span>
+        </div>
         <div class="song-process-wrapper">
           <audio
             ref="player"
@@ -97,13 +99,13 @@
 </template>
 
 <script>
-import playerlist from "@/components/PlayerList.vue";
+import playlist from "@/components/PlayList.vue";
 import Slider from "@/components/Slider.vue";
 import httpService from "@/service/http.service";
 import Bus from "@/eventBus.js";
 export default {
   name: "musicplayer",
-  components: { playerlist, Slider },
+  components: { playlist, Slider },
   data() {
     return {
       audio: "", // 音频资源
@@ -122,10 +124,13 @@ export default {
       maxVolume: 100, // 最大音量
       volumeOnIcon: "/static/icon/volume-on.png", // 音量开图标
       volumeOffIcon: "/static/icon/volume-off.png", // 音量关图标
+      testList: null,
     };
   },
   mounted() {
     this.audio = this.$refs.player;
+    this.audio.volume = 0;
+    this.getStorageInfo();
   },
   created() {
     Bus.$on("playSong", (song) => {
@@ -134,6 +139,11 @@ export default {
   },
   destroyed() {
     Bus.$off();
+  },
+  watch: {
+    currentIndex() {
+      localStorage.setItem("currentIndex", this.currentIndex);
+    },
   },
   computed: {
     title: function () {
@@ -157,6 +167,7 @@ export default {
       } else {
         return (this.currentTime / this.duration) * 100;
       }
+      iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii;
     },
     volumeHandlePosition: function () {
       return (this.currentVolume / this.maxVolume) * 100;
@@ -164,6 +175,20 @@ export default {
   },
   methods: {
     test() {},
+    getStorageInfo() {
+      const storageList = localStorage.getItem("playList");
+      if (storageList !== null) {
+        this.songList = JSON.parse(storageList);
+        this.currentIndex = Number(localStorage.getItem("currentIndex"));
+        this.getAlbumInfo();
+        // TODO 需要计时等待加载url内容，网速慢可能不好用，如何优化？
+        setTimeout(() => {
+          this.checkCurrentProcess();
+        }, 300);
+      } else {
+        localStorage.setItem("currentIndex", 0);
+      }
+    },
     addSong: function (song) {
       if (!song.url) {
         this.pauseSong();
@@ -196,13 +221,7 @@ export default {
         return;
       }
       clearInterval(this.processChecker);
-      const song = this.songList[this.currentIndex];
-      httpService.getAlbumInfo(song.id).then(
-        (res) => {
-          this.albumPic = res.songs[0].al.picUrl;
-        },
-        (err) => {}
-      );
+      this.getAlbumInfo();
       // 哪怕加一毫秒都能播放，直接播放就不行？
       this.isPlaying = true;
       setTimeout(() => {
@@ -211,6 +230,17 @@ export default {
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
       }, 200);
+    },
+    getAlbumInfo() {
+      const currentSong = this.songList[this.currentIndex];
+      httpService.getAlbumInfo(currentSong.id).then(
+        (res) => {
+          this.albumPic = res.songs[0].al.picUrl;
+        },
+        () => {
+          console.log("图片没找到");
+        }
+      );
     },
     pauseSong: function () {
       this.isPlaying = false;
@@ -236,7 +266,11 @@ export default {
           this.currentIndex++;
         }
       }
-      this.playSong();
+      if (this.isPlaying) {
+        this.playSong();
+      } else {
+        this.currentTime = 0;
+      }
     },
     toggleLoopMode() {
       this.loopList = !this.loopList;
@@ -259,7 +293,6 @@ export default {
         this.currentIndex--;
       }
       this.songList.splice(index, 1);
-
     },
     playListSong: function (index) {
       this.currentIndex = index;
@@ -312,6 +345,9 @@ export default {
         this.removeVolumeController,
         false
       );
+    },
+    goToLyric() {
+      Bus.$emit("goToLyric", this.songList[this.currentIndex].id);
     },
   },
 };
@@ -397,7 +433,7 @@ export default {
     text-align: left;
     vertical-align: middle;
     display: inline-block;
-    .song-title {
+    .song-title-wrapper {
       position: relative;
       width: auto;
       height: 30px;
@@ -405,6 +441,9 @@ export default {
       font-size: 14px;
       color: #e8e8e8;
       text-align: left;
+      .song-title {
+        cursor: pointer !important;
+      }
     }
     .song-process-wrapper {
       position: relative;

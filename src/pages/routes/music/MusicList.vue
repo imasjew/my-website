@@ -36,20 +36,28 @@
         <el-table-column
           prop="title"
           label="歌曲标题"
-          width="500"
+          width="350"
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column label="时长" width="100">
-          <template slot-scope="scope">
-            {{ scope.row.duration | formateDate }}
-          </template>
-        </el-table-column>
+
         <el-table-column
           prop="author"
           label="作者"
+          width="150"
           :show-overflow-tooltip="true"
         >
+        </el-table-column>
+        <el-table-column
+          prop="albumName"
+          label="专辑"
+          :show-overflow-tooltip="true"
+        >
+        </el-table-column>
+        <el-table-column label="时长" width="70">
+          <template slot-scope="scope">
+            {{ scope.row.duration | formateDate }}
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -94,7 +102,7 @@ export default {
       );
     },
     formatSongList: function (songs) {
-      const length = songs.length > 14 ? 14 : songs.length;
+      const length = songs.length > 24 ? 24 : songs.length;
       this.tableData = [];
       for (let i = 0; i < length; i++) {
         let song = {};
@@ -103,6 +111,7 @@ export default {
         song.duration = songs[i].duration / 1000;
         song.author = songs[i].artists[0].name;
         song.albumId = songs[i].album.id;
+        song.albumName = songs[i].album.name;
         this.tableData.push(song);
       }
     },
@@ -147,6 +156,7 @@ export default {
 .song-list-wrapper {
   width: 900px;
   margin: 0 auto;
+  padding-bottom: 80px;
   .el-table td {
     padding: 4px 0;
     .el-icon-video-play {

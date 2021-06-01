@@ -26,14 +26,19 @@
 </template>
 <script>
 export default {
-  name: "playerlist",
+  name: "playlist",
   props: ["songList", "currentIndex", "showList"],
   data() {
     return {
       isPlaying: false,
     };
   },
-  created() {},
+  watch: {
+    songList () {
+      console.log(JSON.stringify(this.songList));
+      localStorage.setItem('playList', JSON.stringify(this.songList))
+    }
+  },
   methods: {
     remove: function (index) {
       this.$emit("remove", index);
