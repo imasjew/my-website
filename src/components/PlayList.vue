@@ -35,7 +35,6 @@ export default {
   },
   watch: {
     songList () {
-      console.log(JSON.stringify(this.songList));
       localStorage.setItem('playList', JSON.stringify(this.songList))
     }
   },

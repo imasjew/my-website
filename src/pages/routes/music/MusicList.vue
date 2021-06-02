@@ -27,9 +27,9 @@
             <i
               :class="[
                 'el-icon-video-play',
-                { playing: scope.$index == playingIndex },
+                { playing: scope.$index == currentIndex },
               ]"
-              @click="playSong(scope.$index, scope.row)"
+              @click="addSong(scope.$index, scope.row)"
             ></i>
           </template>
         </el-table-column>
@@ -75,7 +75,7 @@ export default {
       audioUrl: "",
       audio: "",
       input: "",
-      playingIndex: null,
+      currentIndex: null,
       tableData: [],
     };
   },
@@ -84,6 +84,9 @@ export default {
       this.input = this.$route.query.name;
       this.searchList();
     }
+  },
+  destroyed() {
+    Bus.$off();
   },
   methods: {
     searchList: function () {
@@ -115,27 +118,16 @@ export default {
         this.tableData.push(song);
       }
     },
-    playSong(index, song) {
+    addSong(index, song) {
       httpService.checkSong(song.id).then(
         () => {
-          this.getSong(song);
-          this.playingIndex = index;
+          this.currentIndex = index;
+          Bus.$emit("getSong", song);
         },
         (err) => {
           this.showAlert(err.response.data.message);
         }
       );
-    },
-    getSong: function (songInfo) {
-      httpService.getSongUrl(songInfo.id).then((res) => {
-        const song = {
-          ...songInfo,
-          title: songInfo.title,
-          url: res.data[0].url,
-        };
-        console.log("ass", song);
-        Bus.$emit("playSong", song);
-      });
     },
     showAlert(msg) {
       this.$message({

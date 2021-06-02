@@ -30,6 +30,8 @@
             ref="player"
             :src="url"
             controls="controls"
+            @canplay="audioLoaded()"
+            @error="getReloadSong()"
             @ended="songLoop()"
             class="original-audio"
             v-show="false"
@@ -48,7 +50,7 @@
               @dragMouseUp="dragProcessMouseUp()"
             ></Slider>
           </div>
-          <div class="process-duration" @click="test()">
+          <div class="process-duration">
             {{ currentTime | formateDate }} / {{ duration | formateDate }}
           </div>
         </div>
@@ -133,8 +135,11 @@ export default {
     this.getStorageInfo();
   },
   created() {
-    Bus.$on("playSong", (song) => {
+    Bus.$on("playerAddSong", (song) => {
       this.addSong(song);
+    });
+    Bus.$on("setReloadSong", (song) => {
+      this.setReloadSong(song);
     });
   },
   destroyed() {
@@ -167,14 +172,22 @@ export default {
       } else {
         return (this.currentTime / this.duration) * 100;
       }
-      iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii;
     },
     volumeHandlePosition: function () {
       return (this.currentVolume / this.maxVolume) * 100;
     },
   },
   methods: {
-    test() {},
+    audioLoaded() {
+      this.checkCurrentProcess();
+    },
+    getReloadSong() {
+      Bus.$emit("getSong", this.songList[this.currentIndex]);
+    },
+    setReloadSong(song) {
+      // 必须使用$set以使computed响应变化
+      this.$set(this.songList, this.currentIndex, song);
+    },
     getStorageInfo() {
       const storageList = localStorage.getItem("playList");
       if (storageList !== null) {
@@ -182,9 +195,6 @@ export default {
         this.currentIndex = Number(localStorage.getItem("currentIndex"));
         this.getAlbumInfo();
         // TODO 需要计时等待加载url内容，网速慢可能不好用，如何优化？
-        setTimeout(() => {
-          this.checkCurrentProcess();
-        }, 300);
       } else {
         localStorage.setItem("currentIndex", 0);
       }

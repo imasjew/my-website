@@ -10,7 +10,6 @@
 
 <script>
 import httpService from "@/service/http.service";
-import Bus from "@/eventBus.js";
 export default {
   name: "musiclyric",
   data() {
@@ -19,7 +18,6 @@ export default {
     };
   },
   mounted() {
-    console.log("lyric", this.$route.query.name);
     this.getLyric(this.$route.query.id);
   },
   methods: {
