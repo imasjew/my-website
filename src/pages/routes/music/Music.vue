@@ -1,10 +1,8 @@
 <template>
   <div>
-    music
-    <audio src=""></audio>
-    <button @click="goToPage('musiclist')">list</button>
+    <!-- <button @click="goToPage('musiclist')">list</button>
     <button @click="goToPage('musiclyric')">song</button>
-    <button @click="triggerController()">controller</button>
+    <button @click="triggerController()">controller</button> -->
     <router-view />
     <div class="song-controller" v-show="showController">
       <musicplayer></musicplayer>
@@ -21,23 +19,36 @@ export default {
   components: { musicplayer },
   data() {
     return {
-      currentSong: null,
-      activeIndex: "",
       showController: true,
     };
   },
   created() {
-    Bus.$on("getSong", (songInfo) => {
-      this.getSong(songInfo);
-    });
-    Bus.$on("goToLyric", (songId) => {
-      this.goToLyric(songId);
-    });
+    this.setBusListener();
+    window.addEventListener(
+      "popstate",
+      () => {
+        this.setBusListener();
+      },
+      false
+    );
   },
   destroyed() {
+    document.body.removeEventListener(
+        "popstate",
+        this.setBusListener,
+        false
+      );
     Bus.$off();
   },
   methods: {
+    setBusListener() {
+      Bus.$on("getSong", (songInfo) => {
+        this.getSong(songInfo);
+      });
+      Bus.$on("goToLyric", (songId) => {
+        this.goToLyric(songId);
+      });
+    },
     getSong: function (songInfo, needCheck) {
       httpService.getSongUrl(songInfo.id).then((res) => {
         const song = {
@@ -50,7 +61,7 @@ export default {
         if (needCheck) {
           Bus.$emit("playerAddSong", song);
         } else {
-          Bus.$emit('setReloadSong', song)
+          Bus.$emit("setReloadSong", song);
         }
       });
     },

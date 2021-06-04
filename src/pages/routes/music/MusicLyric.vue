@@ -18,16 +18,17 @@ export default {
     };
   },
   mounted() {
-    this.getLyric(this.$route.query.id);
+    this.getLyric()
+  },
+  watch: {
+    $route() {
+      this.getLyric();
+    }
   },
   methods: {
-    showAlert(msg) {
-      this.$message({
-        message: msg,
-      });
-    },
-    getLyric(id) {
-      httpService.getLyric(id).then(
+    getLyric() {
+      const songId = this.$route.query.id;
+      httpService.getLyric(songId).then(
         (res) => {
           if (res.lrc) {
             const originLyric = res.lrc.lyric;

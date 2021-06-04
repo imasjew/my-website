@@ -114,6 +114,7 @@ export default {
       currentIndex: 0, // 当前播放编号
       albumPic: null, // 专辑封面
       songList: [], // 歌单
+      songReady: false, // 歌曲加载状态
       isPlaying: false, // 播放状态
       loopList: true, // 列表循环开罐
       showList: false, // 列表显示开关
@@ -126,7 +127,6 @@ export default {
       maxVolume: 100, // 最大音量
       volumeOnIcon: "/static/icon/volume-on.png", // 音量开图标
       volumeOffIcon: "/static/icon/volume-off.png", // 音量关图标
-      testList: null,
     };
   },
   mounted() {
@@ -145,11 +145,6 @@ export default {
   destroyed() {
     Bus.$off();
   },
-  watch: {
-    currentIndex() {
-      localStorage.setItem("currentIndex", this.currentIndex);
-    },
-  },
   computed: {
     title: function () {
       if (this.songList.length === 0) {
@@ -162,6 +157,13 @@ export default {
         return "";
       }
       return this.songList[this.currentIndex].url || "";
+    },
+    playState() {
+      const { songReady, isPlaying} = this;
+      return {
+        songReady,
+        isPlaying,
+      };
     },
     playButtonType: function () {
       return this.isPlaying ? "el-icon-video-pause" : "el-icon-video-play";
@@ -177,11 +179,25 @@ export default {
       return (this.currentVolume / this.maxVolume) * 100;
     },
   },
+  watch: {
+    currentIndex() {
+      localStorage.setItem("currentIndex", this.currentIndex);
+    },
+    playState() {
+      if (this.songReady && this.isPlaying) {
+        setTimeout(() => {
+          this.audio.play();
+        }, 1);
+      }
+    },
+  },
   methods: {
     audioLoaded() {
+      this.songReady = true;
       this.checkCurrentProcess();
     },
     getReloadSong() {
+      this.songReady = false;
       Bus.$emit("getSong", this.songList[this.currentIndex]);
     },
     setReloadSong(song) {
@@ -227,16 +243,13 @@ export default {
       }
     },
     playSong: function () {
+      this.isPlaying = false;
       if (this.songList.length === 0) {
         return;
       }
       clearInterval(this.processChecker);
       this.getAlbumInfo();
-      // 哪怕加一毫秒都能播放，直接播放就不行？
       this.isPlaying = true;
-      setTimeout(() => {
-        this.audio.play();
-      }, 100);
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
       }, 200);
