@@ -35,7 +35,7 @@ export default {
             this.lyric = this.dealLyric(originLyric);
           } else {
             const nonLyric = ['0', '纯音乐请欣赏']
-            this.lyric.push(nonLyric);
+            this.lyric = [nonLyric];
           }
         },
         (err) => {
