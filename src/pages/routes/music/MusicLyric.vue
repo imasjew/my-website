@@ -1,29 +1,48 @@
 <template>
   <div>
-    <div></div>
-    <div class="lyric" v-for="(sentence, index) in lyric" :key="index">
-      {{ sentence[1] }}
+    <!-- <div>{{ currentSentenceIndex }}</div> -->
+    <div class="lyric-wrapper">
+      <div
+        :class="[
+          { 'highlight-sentence': index == currentSentenceIndex },
+          'lyric',
+        ]"
+        v-for="(sentence, index) in lyric"
+        :key="index"
+      >
+        {{ sentence.lyric }}
+      </div>
     </div>
   </div>
 </template>
 
-
 <script>
 import httpService from "@/service/http.service";
+import Bus from "@/eventBus.js";
 export default {
   name: "musiclyric",
   data() {
     return {
       lyric: [], // 歌词
+      currentSentenceIndex: null, // 当前高亮歌词index
     };
   },
+  created() {
+    Bus.$on("checkLyricProcess", (process) => {
+      this.checkLyricProcess(process);
+    });
+  },
   mounted() {
-    this.getLyric()
+    this.getLyric();
   },
   watch: {
     $route() {
       this.getLyric();
-    }
+    },
+  },
+
+  destroyed() {
+    // Bus.$off();
   },
   methods: {
     getLyric() {
@@ -34,8 +53,7 @@ export default {
             const originLyric = res.lrc.lyric;
             this.lyric = this.dealLyric(originLyric);
           } else {
-            const nonLyric = ['0', '纯音乐请欣赏']
-            this.lyric = [nonLyric];
+            this.lyric = [{ time: 0, lyric: "纯音乐，请欣赏" }];
           }
         },
         (err) => {
@@ -46,6 +64,8 @@ export default {
     dealLyric(originLyric) {
       // 歌词分句
       let lyricArray = originLyric.split("\n");
+      lyricArray.pop();
+      let dealedLyricArray = [];
       // 每一句再通过"]"拆成时间+歌词
       for (let i in lyricArray) {
         lyricArray[i] = lyricArray[i].substring(1, lyricArray[i].length);
@@ -58,16 +78,49 @@ export default {
             nowArray.splice(2, 1);
           }
         }
+        dealedLyricArray.push({
+          time: this.lyricTimeFormat(lyricArray[i][0]),
+          lyric: lyricArray[i][1],
+        });
       }
-      return lyricArray;
+      return dealedLyricArray;
+    },
+    lyricTimeFormat(originTime) {
+      const splitedTime = originTime.split(/[:]/);
+      const dealedTime = parseFloat(
+        splitedTime[0] * 60 + parseFloat(splitedTime[1])
+      );
+      return dealedTime;
+    },
+    checkLyricProcess(process) {
+      const maxLength = this.lyric.length;
+      if (maxLength === 1) {
+        return;
+      }
+      if (process >= this.lyric[maxLength - 1].time) {
+        this.currentSentenceIndex = maxLength - 1;
+        return;
+      }
+      for (let i = 0; i <= maxLength - 1; i++) {
+        if (process > this.lyric[i].time && process < this.lyric[i + 1].time) {
+          this.currentSentenceIndex = i;
+          return;
+        }
+      }
     },
   },
 };
 </script>
 
 <style lang="less">
-.lyric {
-  // white-space: pre-line;
-  line-height: 32px;
+.lyric-wrapper {
+  padding-bottom: 80px;
+  .lyric {
+    // white-space: pre-line;
+    line-height: 32px;
+  }
+  .highlight-sentence {
+    color: red;
+  }
 }
 </style>

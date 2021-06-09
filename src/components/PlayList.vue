@@ -34,9 +34,9 @@ export default {
     };
   },
   watch: {
-    songList () {
-      localStorage.setItem('playList', JSON.stringify(this.songList))
-    }
+    songList(list) {
+      localStorage.setItem("playList", JSON.stringify(list));
+    },
   },
   methods: {
     remove: function (index) {
@@ -60,8 +60,8 @@ export default {
   width: 900px;
   height: 240px;
   margin: auto;
-  color: #DDD;
-  background-color: #333;
+  color: #ddd;
+  background-color: rgba(51, 51, 51, 0.95);
   border-radius: 4px 4px 0 0;
   .song-list-title {
     background-color: #222;

@@ -143,6 +143,7 @@ export default {
     });
   },
   destroyed() {
+    clearInterval(this.processChecker);
     Bus.$off();
   },
   computed: {
@@ -159,7 +160,7 @@ export default {
       return this.songList[this.currentIndex].url || "";
     },
     playState() {
-      const { songReady, isPlaying} = this;
+      const { songReady, isPlaying } = this;
       return {
         songReady,
         isPlaying,
@@ -180,13 +181,14 @@ export default {
     },
   },
   watch: {
-    currentIndex() {
-      localStorage.setItem("currentIndex", this.currentIndex);
+    currentIndex(index) {
+      localStorage.setItem("currentIndex", index);
     },
     playState() {
       if (this.songReady && this.isPlaying) {
         setTimeout(() => {
           this.audio.play();
+          Bus.$emit("playerStart", this.songList[this.currentIndex].id);
         }, 1);
       }
     },
@@ -252,6 +254,7 @@ export default {
       this.isPlaying = true;
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
+        Bus.$emit("checkLyricProcess", this.currentTime);
       }, 200);
     },
     getAlbumInfo() {
@@ -334,9 +337,10 @@ export default {
     },
     dragProcessMouseUp() {
       this.audio.currentTime = this.currentTime;
+      // 有空研究下为啥设了延时才能走，是否和媒体加载有关？
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
-      }, 200);
+      }, 10);
     },
     // 音量控制组件
     setVolume(barRate) {
@@ -479,6 +483,7 @@ export default {
       }
       .process-container {
         position: relative;
+        top: -4px;
         display: inline-block;
       }
       .process-duration {

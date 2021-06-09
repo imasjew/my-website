@@ -85,9 +85,6 @@ export default {
       this.searchList();
     }
   },
-  destroyed() {
-    Bus.$off();
-  },
   methods: {
     searchList: function () {
       if (this.input === "") {
