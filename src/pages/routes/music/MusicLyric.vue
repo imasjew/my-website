@@ -1,16 +1,20 @@
 <template>
   <div>
     <!-- <div>{{ currentSentenceIndex }}</div> -->
+    <div class="title-wrapper">
+      {{ songTitle }}
+    </div>
     <div class="lyric-wrapper">
-      <div
-        :class="[
-          { 'highlight-sentence': index == currentSentenceIndex },
-          'lyric',
-        ]"
-        v-for="(sentence, index) in lyric"
-        :key="index"
-      >
-        {{ sentence.lyric }}
+      <div v-for="(sentence, index) in lyric" :key="index">
+        <span
+          :class="[
+            { 'highlight-sentence': index == currentSentenceIndex },
+            { 'empty-sentence': sentence.lyric === ''},
+            'lyric',
+          ]"
+          @click="skipByLyric(sentence.time)"
+          >{{ sentence.lyric }}</span
+        >
       </div>
     </div>
   </div>
@@ -23,6 +27,7 @@ export default {
   name: "musiclyric",
   data() {
     return {
+      songTitle: "",
       lyric: [], // 歌词
       currentSentenceIndex: null, // 当前高亮歌词index
     };
@@ -33,11 +38,11 @@ export default {
     });
   },
   mounted() {
-    this.getLyric();
+    this.getPageInfo();
   },
   watch: {
     $route() {
-      this.getLyric();
+      this.getPageInfo();
     },
   },
 
@@ -45,8 +50,24 @@ export default {
     // Bus.$off();
   },
   methods: {
-    getLyric() {
+    getPageInfo() {
       const songId = this.$route.query.id;
+      this.getSongDetail(songId);
+      this.getLyric(songId);
+    },
+    getSongDetail(songId) {
+      httpService.getSongInfo(songId).then(
+        (res) => {
+          console.log("res", res.songs[0].name);
+          this.songTitle = res.songs[0].name;
+        },
+        () => {
+          console.log("图片没找到");
+        }
+      );
+    },
+    getLyric(songId) {
+      console.log("getlyric", songId);
       httpService.getLyric(songId).then(
         (res) => {
           if (res.lrc) {
@@ -108,19 +129,42 @@ export default {
         }
       }
     },
+    skipByLyric(time) {
+      Bus.$emit('skipByLyric', time)
+    }
   },
 };
 </script>
 
 <style lang="less">
+.title-wrapper {
+  padding: 16px;
+  font-size: 24px;
+}
 .lyric-wrapper {
   padding-bottom: 80px;
   .lyric {
     // white-space: pre-line;
+    position: relative;
+    font-size: 16px;
     line-height: 32px;
+    display: inline-block;
+    display: block;
+    cursor: pointer;
+    user-select: none;
   }
   .highlight-sentence {
-    color: red;
+    position: relative;
+    padding: 0 6px;
+    font-size: 20px;
+    box-shadow: 1px 1px 8px black;
+    display: inline-block;
+  }
+  .empty-sentence {
+    height: 32px;
+    line-height: 32px;
+    box-shadow: none;
+    display: inline-block;
   }
 }
 </style>

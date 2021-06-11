@@ -24,8 +24,8 @@ const httpService = {
   checkSong: function (id) {
     return axios.get(APIURL.check_song + id)
   },
-  getAlbumInfo: function (id) {
-    return axios.get(APIURL.get_album_info + id)
+  getSongInfo: function (id) {
+    return axios.get(APIURL.get_song_info + id)
   },
   getLyric: function (id) {
     return axios.get(APIURL.get_lyric + id)

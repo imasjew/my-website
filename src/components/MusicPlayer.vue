@@ -141,6 +141,9 @@ export default {
     Bus.$on("setReloadSong", (song) => {
       this.setReloadSong(song);
     });
+    Bus.$on("skipByLyric", (process) => {
+      this.setProcessByLyric(process);
+    });
   },
   destroyed() {
     clearInterval(this.processChecker);
@@ -211,7 +214,7 @@ export default {
       if (storageList !== null) {
         this.songList = JSON.parse(storageList);
         this.currentIndex = Number(localStorage.getItem("currentIndex"));
-        this.getAlbumInfo();
+        this.getSongInfo();
         // TODO 需要计时等待加载url内容，网速慢可能不好用，如何优化？
       } else {
         localStorage.setItem("currentIndex", 0);
@@ -250,16 +253,16 @@ export default {
         return;
       }
       clearInterval(this.processChecker);
-      this.getAlbumInfo();
+      this.getSongInfo();
       this.isPlaying = true;
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
         Bus.$emit("checkLyricProcess", this.currentTime);
       }, 200);
     },
-    getAlbumInfo() {
+    getSongInfo() {
       const currentSong = this.songList[this.currentIndex];
-      httpService.getAlbumInfo(currentSong.id).then(
+      httpService.getSongInfo(currentSong.id).then(
         (res) => {
           this.albumPic = res.songs[0].al.picUrl;
         },
@@ -342,6 +345,12 @@ export default {
         this.checkCurrentProcess();
       }, 10);
     },
+    // 点击歌词跳转进度
+    setProcessByLyric(process) {
+      if (this.isPlaying) {
+        this.audio.currentTime = process;
+      }
+    },
     // 音量控制组件
     setVolume(barRate) {
       this.currentVolume = this.maxVolume * barRate;
@@ -351,6 +360,8 @@ export default {
     dragVolumeMouseMove(barRate) {
       this.setVolume(barRate);
     },
+    //
+
     toggleVolumeController(e) {
       // 避免点击控制条时触发
       if (e.srcElement.className !== "volume-icon") {
