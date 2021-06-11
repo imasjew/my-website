@@ -67,7 +67,6 @@ export default {
       );
     },
     getLyric(songId) {
-      console.log("getlyric", songId);
       httpService.getLyric(songId).then(
         (res) => {
           if (res.lrc) {
