@@ -42,8 +42,8 @@ export default {
   },
   methods: {
     setBusListener() {
-      Bus.$on("getSong", (songInfo) => {
-        this.getSong(songInfo);
+      Bus.$on("getSong", (payload) => {
+        this.getSong(payload.songInfo, payload.needCheck);
       });
       Bus.$on("goToLyric", (songId) => {
         this.goToLyric(songId);

@@ -39,6 +39,11 @@
           width="350"
           :show-overflow-tooltip="true"
         >
+          <template slot-scope="scope">
+            <span class="song-title" @click="goToLyric(scope.row.id)">{{
+              scope.row.title
+            }}</span>
+          </template>
         </el-table-column>
 
         <el-table-column
@@ -119,7 +124,21 @@ export default {
       httpService.checkSong(song.id).then(
         () => {
           this.currentIndex = index;
-          Bus.$emit("getSong", song);
+          const payload = {
+            songInfo: song,
+            needCheck: true
+          }
+          Bus.$emit("getSong", payload);
+        },
+        (err) => {
+          this.showAlert(err.response.data.message);
+        }
+      );
+    },
+    goToLyric(songId) {
+      httpService.checkSong(songId).then(
+        () => {
+          Bus.$emit("goToLyric", songId);
         },
         (err) => {
           this.showAlert(err.response.data.message);
@@ -146,6 +165,12 @@ export default {
   width: 900px;
   margin: 0 auto;
   padding-bottom: 80px;
+  .song-title {
+    cursor: pointer;
+  }
+  .song-title:hover {
+    color: black;
+  }
   .el-table td {
     padding: 4px 0;
     .el-icon-video-play {
@@ -168,6 +193,7 @@ export default {
       text-shadow: 0 0 1px #c44;
     }
   }
+
   .el-table::before {
     height: 0; // 去除底部白线，会遮盖底部组件
   }

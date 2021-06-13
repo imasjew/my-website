@@ -131,7 +131,7 @@ export default {
   },
   mounted() {
     this.audio = this.$refs.player;
-    this.audio.volume = 0;
+    this.setVolume(0.2);
     this.getStorageInfo();
   },
   created() {
@@ -203,7 +203,11 @@ export default {
     },
     getReloadSong() {
       this.songReady = false;
-      Bus.$emit("getSong", this.songList[this.currentIndex]);
+      const payload = {
+        songInfo: this.songList[this.currentIndex],
+        needCheck: false
+      }
+      Bus.$emit("getSong", payload);
     },
     setReloadSong(song) {
       // 必须使用$set以使computed响应变化
