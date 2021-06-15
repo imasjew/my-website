@@ -144,7 +144,6 @@ export default {
     font-size: 16px;
     line-height: 32px;
     display: inline-block;
-    display: block;
     cursor: pointer;
     user-select: none;
   }
