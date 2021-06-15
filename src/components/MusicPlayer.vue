@@ -261,7 +261,6 @@ export default {
       this.isPlaying = true;
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
-        Bus.$emit("checkLyricProcess", this.currentTime);
       }, 200);
     },
     getSongInfo() {
@@ -283,6 +282,7 @@ export default {
     checkCurrentProcess: function () {
       this.duration = this.audio.duration;
       this.currentTime = this.audio.currentTime;
+      Bus.$emit("checkLyricProcess", this.currentTime);
     },
     switchSong: function (type) {
       if (type === 1) {
@@ -347,7 +347,7 @@ export default {
       // 有空研究下为啥设了延时才能走，是否和媒体加载有关？
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
-      }, 10);
+      }, 200);
     },
     // 点击歌词跳转进度
     setProcessByLyric(process) {

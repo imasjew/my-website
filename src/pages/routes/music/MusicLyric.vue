@@ -46,9 +46,6 @@ export default {
     },
   },
 
-  destroyed() {
-    // Bus.$off();
-  },
   methods: {
     getPageInfo() {
       const songId = this.$route.query.id;
@@ -58,7 +55,6 @@ export default {
     getSongDetail(songId) {
       httpService.getSongInfo(songId).then(
         (res) => {
-          console.log("res", res.songs[0].name);
           this.songTitle = res.songs[0].name;
         },
         () => {
