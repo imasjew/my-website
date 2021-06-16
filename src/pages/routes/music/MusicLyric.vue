@@ -110,9 +110,10 @@ export default {
     },
     checkLyricProcess(process) {
       const maxLength = this.lyric.length;
-      if (maxLength === 1) {
+      if (maxLength <= 1) {
         return;
       }
+      console.log('lyric', this.lyric, this.lyric.length)
       if (process >= this.lyric[maxLength - 1].time) {
         this.currentSentenceIndex = maxLength - 1;
         return;
