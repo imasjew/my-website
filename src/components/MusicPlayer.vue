@@ -44,6 +44,7 @@
               :currentPosition="processHandlePosition"
               :forbidden="duration == 0"
               :autoPlay="true"
+              :isReady = songReady
               @setPosition="setProcess($event)"
               @dragMouseDown="dragProcessMouseDown()"
               @dragMouseMove="dragProcessMouseMove($event)"
@@ -71,9 +72,10 @@
               :currentPosition="volumeHandlePosition"
               :forbidden="false"
               :autoPlay="false"
+              :isReady = true
               @setPosition="setVolume($event)"
               @dragMouseMove="dragVolumeMouseMove($event)"
-            ></Slider>
+            ></Slider>f
           </div>
         </div>
         <div class="icon-wrapper">
@@ -299,7 +301,9 @@ export default {
           this.currentIndex++;
         }
       }
+      this.getSongInfo();
       if (this.isPlaying) {
+
         this.playSong();
       } else {
         this.currentTime = 0;

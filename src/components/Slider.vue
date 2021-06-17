@@ -7,6 +7,7 @@
     <div class="bar-current" :style="barCurrentStyle"></div>
     <div
       class="bar-handle"
+      :class="['bar-handle',!isReady?'handle-loading':'']"
       :style="barHandleStyle"
       @mousedown="dragPosition($event)"
     ></div>
@@ -21,6 +22,7 @@ export default {
     "barWeight",
     "currentPosition",
     "forbidden",
+    "isReady"
   ],
   data: function () {
     return {
@@ -89,15 +91,12 @@ export default {
       if (this.forbidden === true) {
         return;
       }
-      if (e.srcElement.className === "bar-handle") {
-        return;
-      }
       const layerPosition = this.verticalMode ? this.barLength - e.layerY : e.layerX;
       const barRate = layerPosition / this.barLength;
       this.$emit("setPosition", barRate);
     },
     dragPosition: function (e) {
-      e.preventDefault();
+      e.stopPropagation(); // 避免触发process-handle的点击
       if (this.forbidden === true) {
         return;
       }
@@ -152,6 +151,10 @@ export default {
   .bar-handle:hover {
     background-color: #c33;
     box-shadow: 0 0 6px white;
+  }
+  .handle-loading {
+    background-color: #c88;
+    border-color: #bbb !important;
   }
 }
 </style>
