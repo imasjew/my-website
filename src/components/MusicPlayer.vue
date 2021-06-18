@@ -44,7 +44,7 @@
               :currentPosition="processHandlePosition"
               :forbidden="duration == 0"
               :autoPlay="true"
-              :isReady = songReady
+              :isReady="songReady"
               @setPosition="setProcess($event)"
               @dragMouseDown="dragProcessMouseDown()"
               @dragMouseMove="dragProcessMouseMove($event)"
@@ -72,20 +72,21 @@
               :currentPosition="volumeHandlePosition"
               :forbidden="false"
               :autoPlay="false"
-              :isReady = true
+              :isReady="true"
               @setPosition="setVolume($event)"
               @dragMouseMove="dragVolumeMouseMove($event)"
-            ></Slider>f
+            ></Slider
+            >
           </div>
         </div>
         <div class="icon-wrapper">
-          <div v-if="!loopList" class="loop-icon-num">1</div>
+          <div v-if="loopMode==1" class="loop-icon-num">1</div>
           <i
             :class="[
               'loop-mode-icon',
-              loopList ? 'el-icon-refresh' : 'el-icon-refresh-left',
+              loopModeIcon,
             ]"
-            @click="toggleLoopMode()"
+            @click="switchLoopMode()"
           ></i>
         </div>
         <div class="icon-wrapper">
@@ -118,7 +119,7 @@ export default {
       songList: [], // 歌单
       songReady: false, // 歌曲加载状态
       isPlaying: false, // 播放状态
-      loopList: true, // 列表循环开罐
+      loopMode: 0, // 列表循环模式
       showList: false, // 列表显示开关
       currentTime: 0, // 当前进度
       duration: 0, // 歌曲总时长
@@ -133,8 +134,8 @@ export default {
   },
   mounted() {
     this.audio = this.$refs.player;
-    this.setVolume(0.2);
     this.getStorageInfo();
+    this.getStorageSettings();
   },
   created() {
     Bus.$on("playerAddSong", (song) => {
@@ -181,6 +182,18 @@ export default {
         return (this.currentTime / this.duration) * 100;
       }
     },
+    loopModeIcon() {
+      let result;
+      switch(this.loopMode) {
+        case 0:
+          result = 'el-icon-refresh';
+        case 1:
+          result = 'el-icon-refresh-left';
+        default:
+          result = 'el-icon-refresh';
+      }
+      return result;
+    },
     volumeHandlePosition: function () {
       return (this.currentVolume / this.maxVolume) * 100;
     },
@@ -188,6 +201,12 @@ export default {
   watch: {
     currentIndex(index) {
       localStorage.setItem("currentIndex", index);
+    },
+    currentVolume(volume) {
+      localStorage.setItem("volumeRate", volume / this.maxVolume);
+    },
+    loopMode(mode) {
+      localStorage.setItem("loopMode", mode);
     },
     playState() {
       if (this.songReady && this.isPlaying) {
@@ -224,6 +243,20 @@ export default {
         // TODO 需要计时等待加载url内容，网速慢可能不好用，如何优化？
       } else {
         localStorage.setItem("currentIndex", 0);
+      }
+    },
+    getStorageSettings() {
+      const storageVolumeRate = localStorage.getItem("volumeRate");
+      if (storageVolumeRate) {
+        this.currentVolume = storageVolumeRate * this.maxVolume;
+      } else {
+        localStorage.setItem("volumeRate", this.currentVolume / this.maxVolume);
+      }
+      const storageLoopMode = Number(localStorage.getItem("loopMode"));
+      if (storageLoopMode) {
+        this.loopMode = storageLoopMode;
+      } else {
+        localStorage.setItem("loopMode", this.loopMode);
       }
     },
     addSong: function (song) {
@@ -309,11 +342,15 @@ export default {
         this.currentTime = 0;
       }
     },
-    toggleLoopMode() {
-      this.loopList = !this.loopList;
+    switchLoopMode() {
+      if(this.loopMode < 1) {
+        this.loopMode++;
+      } else {
+        this.loopMode = 0;
+      }
     },
     songLoop() {
-      if (this.loopList) {
+      if (this.loopMode === 0) {
         this.switchSong(2);
       } else {
         this.playSong();
