@@ -228,6 +228,9 @@ export default {
     },
     getReloadSong() {
       this.songReady = false;
+      if (this.songList.length === 0) {
+        return;
+      }
       const payload = {
         songInfo: this.songList[this.currentIndex],
         needCheck: false
