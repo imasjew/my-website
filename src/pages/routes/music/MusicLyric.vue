@@ -4,21 +4,27 @@
     <div class="title-wrapper">
       {{ songTitle }}
     </div>
-    <div class="lyric-wrapper">
-      <div v-for="(sentence, index) in lyric" :key="index">
-        <span
-          :class="[
-            { 'highlight-sentence': index == currentSentenceIndex },
-            { 'empty-sentence': sentence.lyric === '' },
-            'lyric',
-          ]"
-          @click="skipByLyric(sentence.time)"
-          >{{ sentence.lyric }}</span
-        >
+    <div class="vocal-wrapper" v-if="!instrumental">
+      <div class="lyric-wrapper">
+        <div v-for="(sentence, index) in lyric" :key="index">
+          <span
+            :class="[
+              { 'highlight-sentence': index == currentSentenceIndex },
+              { 'empty-sentence': sentence.lyric === '' },
+              'lyric',
+            ]"
+            @click="skipByLyric(sentence.time)"
+            >{{ sentence.lyric }}</span
+          >
+        </div>
       </div>
     </div>
-    <div class="album-picture-wrapper" v-show="lyric.length <= 1">
-      <img :src="albumPicture" alt="" ref="albumpic" class="album-picture" />
+    <!-- 用v-if的话，会因为加载次序问题无法获取其style报错 -->
+    <div class="instrumental-wrapper" v-show="instrumental">
+      <div class="album-title">器乐作品，请欣赏</div>
+      <div class="album-picture-wrapper">
+        <img :src="albumPicture" alt="" ref="albumPicture" class="album-picture album-picture-animation" />
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +39,7 @@ export default {
       songTitle: "",
       lyric: [], // 歌词
       albumPicture: "", // 专辑封面
+      instrumental: false, // 器乐曲目标识，分辨显示歌词还是专辑封面
       currentSentenceIndex: null, // 当前高亮歌词index
     };
   },
@@ -41,7 +48,9 @@ export default {
       this.checkLyricProcess(process);
     });
     Bus.$on("setPlayState", (state) => {
-      this.setPlayState(state);
+      setTimeout(() => {
+        this.setPlayState(state);
+      }, 200);
     });
   },
   mounted() {
@@ -52,7 +61,11 @@ export default {
       this.getPageInfo();
     },
   },
-
+  computed: {
+    albumPictureDom() {
+      return this.$refs.albumPicture;
+    }
+  },
   methods: {
     getPageInfo() {
       const songId = this.$route.query.id;
@@ -76,8 +89,12 @@ export default {
           if (res.lrc) {
             const originLyric = res.lrc.lyric;
             this.lyric = this.dealLyric(originLyric);
+            this.instrumental = false;
           } else {
             this.lyric = [{ time: 0, lyric: "纯音乐，请欣赏" }];
+            this.instrumental = true;
+            this.albumPictureDom.removeCla
+
           }
         },
         (err) => {
@@ -137,12 +154,11 @@ export default {
     },
     setPlayState(state) {
       if (state) {
-        this.$refs.albumpic.style.animationPlayState = 'running';
+        this.albumPictureDom.style.animationPlayState = "running";
       } else {
-        this.$refs.albumpic.style.animationPlayState = 'paused';
-
+        this.albumPictureDom.style.animationPlayState = "paused";
       }
-    }
+    },
   },
 };
 </script>
@@ -153,7 +169,7 @@ export default {
   font-size: 24px;
 }
 .lyric-wrapper {
-  padding-bottom: 80px;
+  padding-bottom: 88px;
   .lyric {
     // white-space: pre-line;
     position: relative;
@@ -167,6 +183,7 @@ export default {
     position: relative;
     padding: 0 6px;
     font-size: 20px;
+    border-radius: 8px;
     box-shadow: 1px 1px 8px black;
     display: inline-block;
   }
@@ -176,6 +193,9 @@ export default {
     box-shadow: none;
     display: inline-block;
   }
+}
+.album-title {
+  margin-bottom: 48px;
 }
 .album-picture-wrapper {
   position: relative;
@@ -197,6 +217,8 @@ export default {
     border-radius: 175px;
     box-sizing: border-box;
     user-select: none;
+  }
+  .album-picture-animation {
     animation-name: revolve;
     animation-duration: 21s;
     animation-iteration-count: infinite;
@@ -205,7 +227,11 @@ export default {
   }
 }
 @keyframes revolve {
-  from {transform: rotate(0deg)}
-  to {transform: rotate(360deg)}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
