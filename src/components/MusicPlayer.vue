@@ -203,7 +203,9 @@ export default {
       localStorage.setItem("currentIndex", index);
     },
     currentVolume(volume) {
+      const volumeRate = volume / this.maxVolume;
       localStorage.setItem("volumeRate", volume / this.maxVolume);
+      this.audio.volume = volumeRate;
     },
     loopMode(mode) {
       localStorage.setItem("loopMode", mode);
@@ -401,7 +403,6 @@ export default {
     // 音量控制组件
     setVolume(barRate) {
       this.currentVolume = this.maxVolume * barRate;
-      this.audio.volume = barRate;
       this.volumeOn = barRate !== 0;
     },
     dragVolumeMouseMove(barRate) {
