@@ -17,8 +17,8 @@
         ></i>
         <i class="el-icon-download afterward" @click="switchSong(2)"></i>
       </div>
-      <div class="album-pic">
-        <img :src="albumPic" alt="" />
+      <div class="album-picture">
+        <img :src="albumPicture" alt="" />
         <div class="img-mask"></div>
       </div>
       <div class="main-info">
@@ -115,7 +115,7 @@ export default {
     return {
       audio: "", // 音频资源
       currentIndex: 0, // 当前播放编号
-      albumPic: null, // 专辑封面
+      albumPicture: null, // 专辑封面
       songList: [], // 歌单
       songReady: false, // 歌曲加载状态
       isPlaying: false, // 播放状态
@@ -212,8 +212,10 @@ export default {
       if (this.songReady && this.isPlaying) {
         setTimeout(() => {
           this.audio.play();
-          Bus.$emit("playerStart", this.songList[this.currentIndex].id);
-        }, 1);
+          Bus.$emit("setPlayState", true);
+        }, 10);
+      } else {
+        Bus.$emit("setPlayState", false);
       }
     },
   },
@@ -302,7 +304,7 @@ export default {
       const currentSong = this.songList[this.currentIndex];
       httpService.getSongInfo(currentSong.id).then(
         (res) => {
-          this.albumPic = res.songs[0].al.picUrl;
+          this.albumPicture = res.songs[0].al.picUrl;
         },
         () => {
           console.log("图片没找到");
@@ -336,11 +338,11 @@ export default {
       }
       this.getSongInfo();
       if (this.isPlaying) {
-
         this.playSong();
       } else {
         this.currentTime = 0;
       }
+      Bus.$emit("playerStart", this.songList[this.currentIndex].id);
     },
     switchLoopMode() {
       if(this.loopMode < 1) {
@@ -460,6 +462,10 @@ export default {
     i {
       cursor: pointer;
     }
+    i:hover {
+      color: white;
+      text-shadow: 0 0 4px white;
+    }
     .play-btn {
       font-size: 40px;
       line-height: 36px;
@@ -477,7 +483,7 @@ export default {
       vertical-align: middle;
     }
   }
-  .album-pic {
+  .album-picture {
     position: relative;
     margin: 4px 8px;
     width: 50px;

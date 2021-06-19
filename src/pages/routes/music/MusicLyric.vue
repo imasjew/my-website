@@ -9,13 +9,16 @@
         <span
           :class="[
             { 'highlight-sentence': index == currentSentenceIndex },
-            { 'empty-sentence': sentence.lyric === ''},
+            { 'empty-sentence': sentence.lyric === '' },
             'lyric',
           ]"
           @click="skipByLyric(sentence.time)"
           >{{ sentence.lyric }}</span
         >
       </div>
+    </div>
+    <div class="album-picture-wrapper" v-show="lyric.length <= 1">
+      <img :src="albumPicture" alt="" ref="albumpic" class="album-picture" />
     </div>
   </div>
 </template>
@@ -29,12 +32,16 @@ export default {
     return {
       songTitle: "",
       lyric: [], // 歌词
+      albumPicture: "", // 专辑封面
       currentSentenceIndex: null, // 当前高亮歌词index
     };
   },
   created() {
     Bus.$on("checkLyricProcess", (process) => {
       this.checkLyricProcess(process);
+    });
+    Bus.$on("setPlayState", (state) => {
+      this.setPlayState(state);
     });
   },
   mounted() {
@@ -56,9 +63,10 @@ export default {
       httpService.getSongInfo(songId).then(
         (res) => {
           this.songTitle = res.songs[0].name;
+          this.albumPicture = res.songs[0].al.picUrl;
         },
         () => {
-          console.log("图片没找到");
+          console.log("歌曲信息加载失败");
         }
       );
     },
@@ -113,7 +121,6 @@ export default {
       if (maxLength <= 1) {
         return;
       }
-      console.log('lyric', this.lyric, this.lyric.length)
       if (process >= this.lyric[maxLength - 1].time) {
         this.currentSentenceIndex = maxLength - 1;
         return;
@@ -126,7 +133,15 @@ export default {
       }
     },
     skipByLyric(time) {
-      Bus.$emit('skipByLyric', time)
+      Bus.$emit("skipByLyric", time);
+    },
+    setPlayState(state) {
+      if (state) {
+        this.$refs.albumpic.style.animationPlayState = 'running';
+      } else {
+        this.$refs.albumpic.style.animationPlayState = 'paused';
+
+      }
     }
   },
 };
@@ -134,7 +149,7 @@ export default {
 
 <style lang="less">
 .title-wrapper {
-  padding: 16px;
+  padding: 48px 0 32px 0;
   font-size: 24px;
 }
 .lyric-wrapper {
@@ -161,5 +176,36 @@ export default {
     box-shadow: none;
     display: inline-block;
   }
+}
+.album-picture-wrapper {
+  position: relative;
+  margin: auto;
+  width: 500px;
+  height: 500px;
+  border: 3px solid #111;
+  border-radius: 250px;
+  background-color: #222;
+  background-image: linear-gradient(-45deg, black, #3c3c3c, black);
+  box-shadow: 0 0 20px black;
+  .album-picture {
+    position: relative;
+    margin: auto;
+    margin-top: 75px;
+    width: 350px;
+    height: 350px;
+    border: 4px solid #1b1b1b;
+    border-radius: 175px;
+    box-sizing: border-box;
+    user-select: none;
+    animation-name: revolve;
+    animation-duration: 21s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+  }
+}
+@keyframes revolve {
+  from {transform: rotate(0deg)}
+  to {transform: rotate(360deg)}
 }
 </style>
