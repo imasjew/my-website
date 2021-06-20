@@ -75,17 +75,13 @@
               :isReady="true"
               @setPosition="setVolume($event)"
               @dragMouseMove="dragVolumeMouseMove($event)"
-            ></Slider
-            >
+            ></Slider>
           </div>
         </div>
         <div class="icon-wrapper">
-          <div v-if="loopMode==1" class="loop-icon-num">1</div>
+          <div v-if="loopMode == 1" class="loop-icon-num">1</div>
           <i
-            :class="[
-              'loop-mode-icon',
-              loopModeIcon,
-            ]"
+            :class="['loop-mode-icon', loopModeIcon]"
             @click="switchLoopMode()"
           ></i>
         </div>
@@ -184,13 +180,13 @@ export default {
     },
     loopModeIcon() {
       let result;
-      switch(this.loopMode) {
+      switch (this.loopMode) {
         case 0:
-          result = 'el-icon-refresh';
+          result = "el-icon-refresh";
         case 1:
-          result = 'el-icon-refresh-left';
+          result = "el-icon-refresh-left";
         default:
-          result = 'el-icon-refresh';
+          result = "el-icon-refresh";
       }
       return result;
     },
@@ -233,8 +229,8 @@ export default {
       }
       const payload = {
         songInfo: this.songList[this.currentIndex],
-        needCheck: false
-      }
+        needCheck: false,
+      };
       Bus.$emit("getSong", payload);
     },
     setReloadSong(song) {
@@ -350,7 +346,7 @@ export default {
       }
     },
     switchLoopMode() {
-      if(this.loopMode < 1) {
+      if (this.loopMode < 1) {
         this.loopMode++;
       } else {
         this.loopMode = 0;
@@ -438,6 +434,11 @@ export default {
     },
     goToLyric() {
       Bus.$emit("goToLyric", this.songList[this.currentIndex].id);
+      setTimeout(() => {
+        if (this.isPlaying) {
+          Bus.$emit("setPlayState", true);
+        }
+      }, 10);
     },
   },
 };
