@@ -38,8 +38,8 @@ export default {
   },
   methods: {
     setBusListener() {
-      Bus.$on("getSong", (payload) => {
-        this.getSong(payload.songInfo, payload.needCheck);
+      Bus.$on("getSongUrl", (payload) => {
+        this.getSongUrl(payload.songInfo, payload.onlyUpdate);
       });
       Bus.$on("goToLyric", (songId) => {
         this.goToLyric(songId);
@@ -49,7 +49,7 @@ export default {
       });
 
     },
-    getSong(songInfo, needCheck) {
+    getSongUrl(songInfo, onlyUpdate) {
       httpService.getSongUrl(songInfo.id).then((res) => {
         const song = {
           ...songInfo,
@@ -58,10 +58,10 @@ export default {
         };
         // index传null代表播放器url过期请求重新获取，无需设置列表项
         // 也不用返回到常规添加检查流程，直接在列表内替换即可
-        if (needCheck) {
-          Bus.$emit("playerAddSong", song);
-        } else {
+        if (onlyUpdate) {
           Bus.$emit("setReloadSong", song);
+        } else {
+          Bus.$emit("playerAddSong", song);
         }
       });
     },

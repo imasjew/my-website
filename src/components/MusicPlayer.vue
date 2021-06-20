@@ -229,9 +229,9 @@ export default {
       }
       const payload = {
         songInfo: this.songList[this.currentIndex],
-        needCheck: false,
+        onlyUpdate: true,
       };
-      Bus.$emit("getSong", payload);
+      Bus.$emit("getSongUrl", payload);
     },
     setReloadSong(song) {
       // 必须使用$set以使computed响应变化

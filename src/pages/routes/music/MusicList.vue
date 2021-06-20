@@ -126,9 +126,9 @@ export default {
           this.currentIndex = index;
           const payload = {
             songInfo: song,
-            needCheck: true
+            onlyUpdate: false
           }
-          Bus.$emit("getSong", payload);
+          Bus.$emit("getSongUrl", payload);
         },
         (err) => {
           this.showAlert(err.response.data.message);
