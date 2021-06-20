@@ -62,9 +62,13 @@ export default {
   margin: auto;
   color: #ddd;
   background-color: rgba(51, 51, 51, 0.95);
-  border-radius: 4px 4px 0 0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 0 4px #333;
   .song-list-title {
+    height: 24px;
+    line-height: 24px;
     background-color: #222;
+    border-radius: 8px 8px 0 0;
   }
   .song-list-table {
     padding: 0;
