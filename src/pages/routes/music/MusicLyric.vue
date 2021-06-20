@@ -93,7 +93,11 @@ export default {
           } else {
             this.lyric = [{ time: 0, lyric: "纯音乐，请欣赏" }];
             this.instrumental = true;
-            this.albumPictureDom.removeCla
+            // 切歌重置唱片角度，但不知道为何必须延时，而且时间短了还有可能失败
+            this.albumPictureDom.classList.remove('album-picture-animation');
+            setTimeout(() => {
+              this.albumPictureDom.classList.add('album-picture-animation');
+            }, 100);
 
           }
         },
