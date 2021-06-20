@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="lyric-page-wrapper">
     <!-- <div>{{ currentSentenceIndex }}</div> -->
     <div class="title-wrapper">
       {{ songTitle }}
@@ -23,8 +23,16 @@
     <div class="instrumental-wrapper" v-show="instrumental">
       <div class="album-title">器乐作品，请欣赏</div>
       <div class="album-picture-wrapper">
-        <img :src="albumPicture" alt="" ref="albumPicture" class="album-picture album-picture-animation" />
+        <img
+          :src="albumPicture"
+          alt=""
+          ref="albumPicture"
+          class="album-picture album-picture-animation"
+        />
       </div>
+    </div>
+    <div class="backward-button">
+      <i class="el-icon-back" @click="goToMusicList()"></i>
     </div>
   </div>
 </template>
@@ -64,7 +72,7 @@ export default {
   computed: {
     albumPictureDom() {
       return this.$refs.albumPicture;
-    }
+    },
   },
   methods: {
     getPageInfo() {
@@ -94,11 +102,10 @@ export default {
             this.lyric = [{ time: 0, lyric: "纯音乐，请欣赏" }];
             this.instrumental = true;
             // 切歌重置唱片角度，但不知道为何必须延时，而且时间短了还有可能失败
-            this.albumPictureDom.classList.remove('album-picture-animation');
+            this.albumPictureDom.classList.remove("album-picture-animation");
             setTimeout(() => {
-              this.albumPictureDom.classList.add('album-picture-animation');
+              this.albumPictureDom.classList.add("album-picture-animation");
             }, 100);
-
           }
         },
         (err) => {
@@ -163,73 +170,96 @@ export default {
         this.albumPictureDom.style.animationPlayState = "paused";
       }
     },
+    goToMusicList() {
+      Bus.$emit("goToMusicList", this.songTitle);
+    }
   },
 };
 </script>
 
 <style lang="less">
-.title-wrapper {
-  padding: 48px 0 32px 0;
-  font-size: 24px;
-}
-.lyric-wrapper {
-  padding-bottom: 88px;
-  .lyric {
-    // white-space: pre-line;
-    position: relative;
-    font-size: 16px;
-    line-height: 32px;
-    display: inline-block;
-    cursor: pointer;
-    user-select: none;
-  }
-  .highlight-sentence {
-    position: relative;
-    padding: 0 6px;
-    font-size: 20px;
-    border-radius: 8px;
-    box-shadow: 1px 1px 8px black;
-    display: inline-block;
-  }
-  .empty-sentence {
-    height: 32px;
-    line-height: 32px;
-    box-shadow: none;
-    display: inline-block;
-  }
-}
-.album-title {
-  margin-bottom: 48px;
-}
-.album-picture-wrapper {
+.lyric-page-wrapper {
   position: relative;
-  margin: auto;
-  width: 500px;
-  height: 500px;
-  border: 3px solid #111;
-  border-radius: 250px;
-  background-color: #222;
-  background-image: linear-gradient(-45deg, black, #3c3c3c, black);
-  box-shadow: 0 0 20px black;
-  .album-picture {
+  .title-wrapper {
+    padding: 48px 0 32px 0;
+    font-size: 24px;
+    color: #303133;
+  }
+  .lyric-wrapper {
+    padding-bottom: 88px;
+    .lyric {
+      // white-space: pre-line;
+      position: relative;
+      font-size: 16px;
+      color: #303133;
+      line-height: 32px;
+      display: inline-block;
+      cursor: pointer;
+      user-select: none;
+    }
+    .highlight-sentence {
+      position: relative;
+      padding: 0 6px;
+      font-size: 20px;
+      border-radius: 8px;
+      box-shadow: 1px 1px 8px black;
+      display: inline-block;
+    }
+    .empty-sentence {
+      height: 32px;
+      line-height: 32px;
+      box-shadow: none;
+      display: inline-block;
+    }
+  }
+  .album-title {
+    margin-bottom: 48px;
+  }
+  .album-picture-wrapper {
     position: relative;
     margin: auto;
-    margin-top: 75px;
-    width: 350px;
-    height: 350px;
-    border: 4px solid #1b1b1b;
-    border-radius: 175px;
-    box-sizing: border-box;
-    user-select: none;
+    width: 500px;
+    height: 500px;
+    border: 3px solid #111;
+    border-radius: 250px;
+    background-color: #222;
+    background-image: linear-gradient(-45deg, black, #3c3c3c, black);
+    box-shadow: 0 0 20px black;
+    .album-picture {
+      position: relative;
+      margin: auto;
+      margin-top: 75px;
+      width: 350px;
+      height: 350px;
+      border: 4px solid #1b1b1b;
+      border-radius: 175px;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .album-picture-animation {
+      animation-name: revolve;
+      animation-duration: 21s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+      animation-play-state: paused;
+    }
   }
-  .album-picture-animation {
-    animation-name: revolve;
-    animation-duration: 21s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-    animation-play-state: paused;
+  .backward-button {
+    position: absolute;
+    left: 24px;
+    top: 48px;
+    i {
+      font-size: 24px;
+      color: #909399;
+    }
+    i:hover {
+      color: #303133;
+      text-shadow: 0 0 4px gray;
+    }
+
   }
 }
+
 @keyframes revolve {
   from {
     transform: rotate(0deg);

@@ -44,6 +44,10 @@ export default {
       Bus.$on("goToLyric", (songId) => {
         this.goToLyric(songId);
       });
+      Bus.$on("goToMusicList", (songTitle) => {
+        this.goToMusicList(songTitle);
+      });
+
     },
     getSong(songInfo, needCheck) {
       httpService.getSongUrl(songInfo.id).then((res) => {
@@ -73,6 +77,12 @@ export default {
         query: { id: songId },
       });
     },
+    goToMusicList(title) {
+      this.$router.push({
+        path: "/home/music/musiclist",
+        query: { name: title }
+      })
+    }
   },
 };
 </script>
