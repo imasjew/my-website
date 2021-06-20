@@ -304,6 +304,7 @@ export default {
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
       }, 200);
+      Bus.$emit("playerStart", this.songList[this.currentIndex].id);
     },
     getSongInfo() {
       const currentSong = this.songList[this.currentIndex];
@@ -347,7 +348,6 @@ export default {
       } else {
         this.currentTime = 0;
       }
-      Bus.$emit("playerStart", this.songList[this.currentIndex].id);
     },
     switchLoopMode() {
       if(this.loopMode < 1) {
@@ -379,6 +379,7 @@ export default {
       this.currentIndex = index;
       this.playSong();
     },
+
     // 进度条控制组件
     setProcess(barRate) {
       this.currentTime = this.duration * barRate;
