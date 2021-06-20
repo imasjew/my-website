@@ -153,8 +153,13 @@ export default {
     box-shadow: 0 0 6px white;
   }
   .handle-loading {
-    background-color: #c88;
-    border-color: #bbb !important;
+    background-color: #e77;
+    border-color: #eee !important;
+  }
+  .handle-loading:hover {
+    background-color: #e77;
+    border-color: #eee !important;
+    box-shadow: none;
   }
 }
 </style>
