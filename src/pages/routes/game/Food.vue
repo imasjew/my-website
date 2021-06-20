@@ -22,7 +22,7 @@ export default {
     this.resetMapPlace();
   },
   methods: {
-    resetMapPlace: function () {
+    resetMapPlace() {
       this.mapPlace = [];
       this.renderPlace = [];
       const placeLength = this.mapSize[0] * this.mapSize[1];
@@ -39,8 +39,7 @@ export default {
         effectWrapper.removeChild(effectWrapper.lastChild);
       }, 550);
     },
-    createFood: function () {
-
+    createFood() {
       if (this.renderPlace.length > 0) {
         this.showEffect('remove');
       }
@@ -53,7 +52,7 @@ export default {
 
       this.renderFood();
     },
-    generatePosition: function () {
+    generatePosition() {
       const randomIndex = Math.floor(Math.random() * this.renderPlace.length);
       const randomPlace = this.renderPlace[randomIndex];
       let x, y;
@@ -68,7 +67,7 @@ export default {
       this.position = [x, y];
       this.renderPlace.splice(randomIndex, 1);
     },
-    renderFood: function () {
+    renderFood() {
       this.removeFood();
       const foodWrapper = this.$refs.food;
       const food = document.createElement("div");
@@ -83,7 +82,7 @@ export default {
       foodWrapper.appendChild(food);
       this.showEffect('create');
     },
-    removeFood: function () {
+    removeFood() {
       const foodWrapper = this.$refs.food;
       while (foodWrapper.hasChildNodes()) {
         foodWrapper.removeChild(foodWrapper.lastChild);

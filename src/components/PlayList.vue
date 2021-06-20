@@ -39,10 +39,10 @@ export default {
     },
   },
   methods: {
-    remove: function (index) {
+    remove(index) {
       this.$emit("remove", index);
     },
-    playSong: function (e, index) {
+    playSong(e, index) {
       if (e.srcElement.className === "el-icon-delete") {
         return;
       }

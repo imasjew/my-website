@@ -15,7 +15,7 @@ export default {
     }
   },
   methods: {
-    setTime: function() {
+    setTime() {
       this.time--;
     },
     goLoggin() {

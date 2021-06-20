@@ -110,7 +110,7 @@ export default {
     clearInterval(this.timeInterval);
   },
   methods: {
-    renderMap: function () {
+    renderMap() {
       const gameWrapper = this.$refs.gameWrapper;
       const gameZone = this.$refs.gameZone;
       const infoZone = this.$refs.infoZone.style;
@@ -120,7 +120,7 @@ export default {
         this.mapSize[0] * this.scale + this.infoWidth + 10 + "px";
       gameWrapper.style.height = this.mapSize[1] * this.scale + 10 + "px";
     },
-    startGame: function () {
+    startGame() {
       this.isGamming = true;
       this.score = 0;
       this.direction = 39;
@@ -133,7 +133,7 @@ export default {
         _this.time++;
       }, 1000);
     },
-    resetGame: function () {
+    resetGame() {
       this.isGamming = false;
       this.maskWord = 'CLICK or press ENTER to start!';
       this.food.resetMapPlace();
@@ -145,11 +145,11 @@ export default {
       this.score = 0;
       document.getElementById('restart-btn').blur(); // 点击按钮后按钮获得焦点，此时按回车会误触发reset
     },
-    checkSnakeStatus: function (snakeBody) {
+    checkSnakeStatus(snakeBody) {
       this.checkSnakeAlive(snakeBody);
       this.checkFood(snakeBody);
     },
-    checkSnakeAlive: function (snakeBody) {
+    checkSnakeAlive(snakeBody) {
       var x = snakeBody[0].x;
       var y = snakeBody[0].y;
       if (
@@ -163,7 +163,7 @@ export default {
         // this.dead();
       }
     },
-    checkFood: function (snakeBody) {
+    checkFood(snakeBody) {
       var sx = snakeBody[0].x;
       var sy = snakeBody[0].y;
       var fx = this.food.position[0];
@@ -174,7 +174,7 @@ export default {
         this.score++;
       }
     },
-    checkFoodOnSnake: function (food) {
+    checkFoodOnSnake(food) {
       const fx = food[0];
       const fy = food[1];
       const snakeBody = this.snake.body;
@@ -186,7 +186,7 @@ export default {
         }
       }
     },
-    snakeCrashBody: function () {
+    snakeCrashBody() {
       this.alertWord("Don’t crash yourself!");
     },
     alertWord(info) {

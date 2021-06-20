@@ -33,11 +33,7 @@ export default {
     );
   },
   destroyed() {
-    document.body.removeEventListener(
-        "popstate",
-        this.setBusListener,
-        false
-      );
+    document.body.removeEventListener("popstate", this.setBusListener, false);
     Bus.$off();
   },
   methods: {
@@ -50,12 +46,12 @@ export default {
       });
       // 播放器切换歌曲时，如果在歌词页就跟着换歌
       Bus.$on("playerStart", (songId) => {
-        if (this.$route.name === 'musiclyric') {
+        if (this.$route.name === "musiclyric") {
           this.goToLyric(songId);
         }
       });
     },
-    getSong: function (songInfo, needCheck) {
+    getSong(songInfo, needCheck) {
       httpService.getSongUrl(songInfo.id).then((res) => {
         const song = {
           ...songInfo,
@@ -74,7 +70,7 @@ export default {
     goToPage(key) {
       this.$router.push("/home/music/" + key);
     },
-    triggerController: function () {
+    triggerController() {
       this.showController = !this.showController;
     },
     goToLyric(songId) {

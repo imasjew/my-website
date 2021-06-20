@@ -91,7 +91,7 @@ export default {
     }
   },
   methods: {
-    searchList: function () {
+    searchList () {
       if (this.input === "") {
         return;
       }
@@ -106,7 +106,7 @@ export default {
         }
       );
     },
-    formatSongList: function (songs) {
+    formatSongList (songs) {
       const length = songs.length > 24 ? 24 : songs.length;
       this.tableData = [];
       for (let i = 0; i < length; i++) {

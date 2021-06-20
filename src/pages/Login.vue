@@ -57,7 +57,7 @@ export default {
     };
   },
   methods: {
-    submitForm: function (formName) {
+    submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           localStorage.setItem('username', this.ruleForm.name)

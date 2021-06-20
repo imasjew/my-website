@@ -36,7 +36,7 @@ export default {
     this.activeIndex = rootRoute;
   },
   methods: {
-    handleSelect: function (key) {
+    handleSelect(key) {
       if (key === "logout") {
         localStorage.removeItem("username");
         this.$router.push("/login");
@@ -49,7 +49,7 @@ export default {
       }
       this.$router.push("/home/" + key);
     },
-    checkSameRoutes: function () {
+    checkSameRoutes() {
       const routesLen = this.Routes.length;
       for (let i = 0; i < routesLen; i++) {
         if (this.$route.fullPath.indexOf(this.Routes[i]) >= 0) {

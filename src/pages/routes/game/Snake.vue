@@ -26,20 +26,20 @@ export default {
     // this.deleteSnake();
   },
   methods: {
-    createSnake: function () {
+    createSnake() {
       this.alive = true;
       this.resetBody();
       this.renderBody();
       this.autoMove();
     },
-    resetBody: function () {
+    resetBody() {
       this.body = [
         { x: 5, y: 3 },
         { x: 4, y: 3 },
         { x: 3, y: 3 },
       ];
     },
-    renderBody: function () {
+    renderBody() {
       const snakeWrapper = this.$refs.snake;
       // 清理上次的蛇
       this.removeBody(snakeWrapper);
@@ -60,7 +60,7 @@ export default {
         snakeWrapper.appendChild(snake);
       }
     },
-    autoMove: function () {
+    autoMove() {
       clearInterval(this.movingInterval);
       const _this = this;
       this.movingInterval = setInterval(() => {
@@ -72,7 +72,7 @@ export default {
         this.currentDirection = this.direction;
       }
     },
-    move: function () {
+    move() {
       this.checkDirection();
       var max = this.body.length - 1;
       var tailData = this.body[max];
@@ -114,7 +114,7 @@ export default {
       }
       this.renderBody();
     },
-    checkBodyCrash: function () {
+    checkBodyCrash() {
       const tailIndex = this.body.length - 1;
       const hx = this.body[0].x;
       const hy = this.body[0].y;
@@ -127,7 +127,7 @@ export default {
         }
       }
     },
-    removeBody: function (snakeWrapper) {
+    removeBody(snakeWrapper) {
       // 清理上次的蛇
       while (snakeWrapper.hasChildNodes()) {
         snakeWrapper.removeChild(snakeWrapper.lastChild);
@@ -138,13 +138,13 @@ export default {
       this.removeBody(snakeWrapper)
       clearInterval(this.movingInterval);
     },
-    grow: function () {
+    grow() {
       this.growFlag = true;
     },
-    cheatGrow: function () {
+    cheatGrow() {
       this.body.push(this.body[this.body.length - 1]);
     },
-    cheatCut: function () {
+    cheatCut() {
       if (this.body.length >= 2) {
         this.body.pop();
       }

@@ -15,19 +15,19 @@ axios.interceptors.response.use(function (response) {
 });
 
 const httpService = {
-  getSongList: function (key) {
+  getSongList(key) {
     return axios.get(APIURL.song_list + key)
   },
-  getSongUrl: function (id) {
+  getSongUrl(id) {
     return axios.get(APIURL.song_url + id)
   },
-  checkSong: function (id) {
+  checkSong(id) {
     return axios.get(APIURL.check_song + id)
   },
-  getSongInfo: function (id) {
+  getSongInfo(id) {
     return axios.get(APIURL.get_song_info + id)
   },
-  getLyric: function (id) {
+  getLyric(id) {
     return axios.get(APIURL.get_lyric + id)
   }
 }

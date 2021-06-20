@@ -24,7 +24,7 @@ export default {
     "forbidden",
     "isReady"
   ],
-  data: function () {
+  data() {
     return {
       isPlaying: false,
     };
@@ -87,7 +87,7 @@ export default {
     }
   },
   methods: {
-    clickPosition: function (e) {
+    clickPosition(e) {
       if (this.forbidden === true) {
         return;
       }
@@ -95,7 +95,7 @@ export default {
       const barRate = layerPosition / this.barLength;
       this.$emit("setPosition", barRate);
     },
-    dragPosition: function (e) {
+    dragPosition(e) {
       e.stopPropagation(); // 避免触发process-handle的点击
       if (this.forbidden === true) {
         return;

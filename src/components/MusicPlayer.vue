@@ -149,13 +149,13 @@ export default {
     Bus.$off();
   },
   computed: {
-    title: function () {
+    title() {
       if (this.songList.length === 0) {
         return "";
       }
       return this.songList[this.currentIndex].title || "";
     },
-    url: function () {
+    url() {
       if (this.songList.length === 0) {
         return "";
       }
@@ -168,10 +168,10 @@ export default {
         isPlaying,
       };
     },
-    playButtonType: function () {
+    playButtonType() {
       return this.isPlaying ? "el-icon-video-pause" : "el-icon-video-play";
     },
-    processHandlePosition: function () {
+    processHandlePosition() {
       if (this.duration === 0) {
         return 0;
       } else {
@@ -190,7 +190,7 @@ export default {
       }
       return result;
     },
-    volumeHandlePosition: function () {
+    volumeHandlePosition() {
       return (this.currentVolume / this.maxVolume) * 100;
     },
   },
@@ -262,7 +262,7 @@ export default {
         localStorage.setItem("loopMode", this.loopMode);
       }
     },
-    addSong: function (song) {
+    addSong(song) {
       if (!song.url) {
         this.pauseSong();
       }
@@ -274,7 +274,7 @@ export default {
       }
       this.playSong();
     },
-    checkDuplicate: function (song) {
+    checkDuplicate(song) {
       const listLength = this.songList.length;
       for (let i = 0; i <= listLength; i++) {
         if (song.id === this.songList[i].id) {
@@ -289,7 +289,7 @@ export default {
         }
       }
     },
-    playSong: function () {
+    playSong () {
       this.isPlaying = false;
       if (this.songList.length === 0) {
         return;
@@ -313,17 +313,17 @@ export default {
         }
       );
     },
-    pauseSong: function () {
+    pauseSong() {
       this.isPlaying = false;
       this.audio.pause();
       clearInterval(this.processChecker);
     },
-    checkCurrentProcess: function () {
+    checkCurrentProcess() {
       this.duration = this.audio.duration;
       this.currentTime = this.audio.currentTime;
       Bus.$emit("checkLyricProcess", this.currentTime);
     },
-    switchSong: function (type) {
+    switchSong(type) {
       if (type === 1) {
         if (this.currentIndex === 0) {
           this.currentIndex = this.songList.length - 1;
@@ -359,10 +359,10 @@ export default {
         this.playSong();
       }
     },
-    toggleList: function () {
+    toggleList() {
       this.showList = !this.showList;
     },
-    removeListSong: function (index) {
+    removeListSong(index) {
       if (this.currentIndex === index) {
         return;
       }
@@ -371,7 +371,7 @@ export default {
       }
       this.songList.splice(index, 1);
     },
-    playListSong: function (index) {
+    playListSong(index) {
       this.currentIndex = index;
       this.playSong();
     },
