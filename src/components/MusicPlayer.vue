@@ -289,7 +289,7 @@ export default {
         }
       }
     },
-    playSong () {
+    playSong() {
       this.isPlaying = false;
       if (this.songList.length === 0) {
         return;
@@ -300,7 +300,9 @@ export default {
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
       }, 200);
-      Bus.$emit("playerStart", this.songList[this.currentIndex].id);
+      if (this.$route.name === "musiclyric") {
+        Bus.$emit("goToLyric", this.songList[this.currentIndex].id);
+      }
     },
     getSongInfo() {
       const currentSong = this.songList[this.currentIndex];

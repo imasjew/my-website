@@ -44,12 +44,6 @@ export default {
       Bus.$on("goToLyric", (songId) => {
         this.goToLyric(songId);
       });
-      // 播放器切换歌曲时，如果在歌词页就跟着换歌
-      Bus.$on("playerStart", (songId) => {
-        if (this.$route.name === "musiclyric") {
-          this.goToLyric(songId);
-        }
-      });
     },
     getSong(songInfo, needCheck) {
       httpService.getSongUrl(songInfo.id).then((res) => {
