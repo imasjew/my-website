@@ -40,7 +40,7 @@
           :show-overflow-tooltip="true"
         >
           <template slot-scope="scope">
-            <span class="song-title" @click="goToLyric(scope.row.id)">{{
+            <span class="song-title" @click="goToLyric(scope.$index, scope.row)">{{
               scope.row.title
             }}</span>
           </template>
@@ -135,10 +135,11 @@ export default {
         }
       );
     },
-    goToLyric(songId) {
-      httpService.checkSong(songId).then(
+    goToLyric(index, song) {
+      this.addSong(index, song);
+      httpService.checkSong(song.id).then(
         () => {
-          Bus.$emit("goToLyric", songId);
+          Bus.$emit("goToLyric", song.id);
         },
         (err) => {
           this.showAlert(err.response.data.message);
