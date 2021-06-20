@@ -56,8 +56,7 @@ export default {
           title: songInfo.title,
           url: res.data[0].url,
         };
-        // index传null代表播放器url过期请求重新获取，无需设置列表项
-        // 也不用返回到常规添加检查流程，直接在列表内替换即可
+        // onlyUpdate代表songUrl过期，仅需替换为重新获取的返回即可
         if (onlyUpdate) {
           Bus.$emit("setReloadSong", song);
         } else {
