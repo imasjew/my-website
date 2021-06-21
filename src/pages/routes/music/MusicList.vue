@@ -29,7 +29,7 @@
                 'el-icon-video-play',
                 { playing: scope.$index == currentIndex },
               ]"
-              @click="addSong(scope.$index, scope.row)"
+              @click="addSong(scope.$index, scope.row, false)"
             ></i>
           </template>
         </el-table-column>
@@ -40,9 +40,11 @@
           :show-overflow-tooltip="true"
         >
           <template slot-scope="scope">
-            <span class="song-title" @click="goToLyric(scope.$index, scope.row)">{{
-              scope.row.title
-            }}</span>
+            <span
+              class="song-title"
+              @click="addSong(scope.$index, scope.row, true)"
+              >{{ scope.row.title }}</span
+            >
           </template>
         </el-table-column>
 
@@ -91,7 +93,7 @@ export default {
     }
   },
   methods: {
-    searchList () {
+    searchList() {
       if (this.input === "") {
         return;
       }
@@ -106,7 +108,7 @@ export default {
         }
       );
     },
-    formatSongList (songs) {
+    formatSongList(songs) {
       const length = songs.length > 24 ? 24 : songs.length;
       this.tableData = [];
       for (let i = 0; i < length; i++) {
@@ -120,26 +122,18 @@ export default {
         this.tableData.push(song);
       }
     },
-    addSong(index, song) {
+    addSong(index, song, goToLyric) {
       httpService.checkSong(song.id).then(
         () => {
           this.currentIndex = index;
           const payload = {
             songInfo: song,
-            onlyUpdate: false
-          }
+            onlyUpdate: false,
+          };
           Bus.$emit("getSongUrl", payload);
-        },
-        (err) => {
-          this.showAlert(err.response.data.message);
-        }
-      );
-    },
-    goToLyric(index, song) {
-      this.addSong(index, song);
-      httpService.checkSong(song.id).then(
-        () => {
-          Bus.$emit("goToLyric", song.id);
+          if (goToLyric) {
+            Bus.$emit("goToLyric", song.id);
+          }
         },
         (err) => {
           this.showAlert(err.response.data.message);
