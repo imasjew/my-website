@@ -197,6 +197,7 @@ export default {
   watch: {
     currentIndex(index) {
       localStorage.setItem("currentIndex", index);
+      this.getAlbumPicture();
     },
     currentVolume(volume) {
       const volumeRate = volume / this.maxVolume;
@@ -242,7 +243,6 @@ export default {
       if (storageList !== null) {
         this.songList = JSON.parse(storageList);
         this.currentIndex = Number(localStorage.getItem("currentIndex"));
-        this.getSongInfo();
         // TODO 需要计时等待加载url内容，网速慢可能不好用，如何优化？
       } else {
         localStorage.setItem("currentIndex", 0);
@@ -295,7 +295,6 @@ export default {
         return;
       }
       clearInterval(this.processChecker);
-      this.getSongInfo();
       this.isPlaying = true;
       this.processChecker = setInterval(() => {
         this.checkCurrentProcess();
@@ -304,7 +303,7 @@ export default {
         Bus.$emit("goToLyric", this.songList[this.currentIndex].id);
       }
     },
-    getSongInfo() {
+    getAlbumPicture() {
       const currentSong = this.songList[this.currentIndex];
       httpService.getSongInfo(currentSong.id).then(
         (res) => {
@@ -340,7 +339,6 @@ export default {
           this.currentIndex++;
         }
       }
-      this.getSongInfo();
       if (this.isPlaying) {
         this.playSong();
       } else {
