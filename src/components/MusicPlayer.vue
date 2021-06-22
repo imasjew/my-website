@@ -204,6 +204,9 @@ export default {
       localStorage.setItem("volumeRate", volume / this.maxVolume);
       this.audio.volume = volumeRate;
     },
+    songList(list) {
+      localStorage.setItem("playList", JSON.stringify(list));
+    },
     loopMode(mode) {
       localStorage.setItem("loopMode", mode);
     },

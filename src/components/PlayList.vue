@@ -33,11 +33,6 @@ export default {
       isPlaying: false,
     };
   },
-  watch: {
-    songList(list) {
-      localStorage.setItem("playList", JSON.stringify(list));
-    },
-  },
   methods: {
     remove(index) {
       this.$emit("remove", index);
