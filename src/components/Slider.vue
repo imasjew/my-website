@@ -24,11 +24,6 @@ export default {
     "forbidden",
     "isReady"
   ],
-  data() {
-    return {
-      isPlaying: false,
-    };
-  },
   computed: {
     barContainerSize() {
       if (this.verticalMode) {

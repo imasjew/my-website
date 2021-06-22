@@ -18,7 +18,7 @@
         <i class="el-icon-download afterward" @click="switchSong(2)"></i>
       </div>
       <div class="album-picture">
-        <img :src="albumPicture" alt="" />
+        <img :src="albumPicture + 'dsaaa@#$'" alt="" @error="getAlbumPicture()" />
         <div class="img-mask"></div>
       </div>
       <div class="main-info">
@@ -204,8 +204,11 @@ export default {
       localStorage.setItem("volumeRate", volume / this.maxVolume);
       this.audio.volume = volumeRate;
     },
-    songList(list) {
-      localStorage.setItem("playList", JSON.stringify(list));
+    songList: {
+      handler(list) {
+        localStorage.setItem("playList", JSON.stringify(list));
+      },
+      deep: true,
     },
     loopMode(mode) {
       localStorage.setItem("loopMode", mode);
@@ -246,7 +249,7 @@ export default {
       if (storageList !== null) {
         this.songList = JSON.parse(storageList);
         this.currentIndex = Number(localStorage.getItem("currentIndex"));
-        // TODO 需要计时等待加载url内容，网速慢可能不好用，如何优化？
+        this.getAlbumPicture();
       } else {
         localStorage.setItem("currentIndex", 0);
       }
@@ -307,8 +310,9 @@ export default {
       }
     },
     getAlbumPicture() {
+      console.log('get album picture')
       const currentSong = this.songList[this.currentIndex];
-      httpService.getSongInfo(currentSong.id).then(
+      httpService.getSongDetail(currentSong.id).then(
         (res) => {
           this.albumPicture = res.songs[0].al.picUrl;
         },

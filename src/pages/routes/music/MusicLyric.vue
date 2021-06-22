@@ -81,7 +81,7 @@ export default {
       this.getLyric(songId);
     },
     getSongDetail(songId) {
-      httpService.getSongInfo(songId).then(
+      httpService.getSongDetail(songId).then(
         (res) => {
           this.songTitle = res.songs[0].name;
           this.albumPicture = res.songs[0].al.picUrl;
