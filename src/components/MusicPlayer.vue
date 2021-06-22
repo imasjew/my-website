@@ -5,9 +5,9 @@
         ref="playlist"
         :songList="songList"
         :currentIndex="currentIndex"
-        :showList="showList"
         @remove="removeListSong($event)"
         @play="playListSong($event)"
+        v-show="showList"
       ></playlist>
       <div class="controll-btn">
         <i class="el-icon-download backward" @click="switchSong(1)"></i>

@@ -1,5 +1,5 @@
 <template>
-  <div class="song-list" v-if="showList">
+  <div class="song-list">
     <div class="song-list-title">歌曲列表({{ songList.length }})</div>
     <ul class="song-list-table">
       <li
@@ -27,7 +27,7 @@
 <script>
 export default {
   name: "playlist",
-  props: ["songList", "currentIndex", "showList"],
+  props: ["songList", "currentIndex"],
   data() {
     return {
       isPlaying: false,
