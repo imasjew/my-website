@@ -18,7 +18,7 @@
         <i class="el-icon-download afterward" @click="switchSong(2)"></i>
       </div>
       <div class="album-picture">
-        <img :src="albumPicture + 'dsaaa@#$'" alt="" @error="getAlbumPicture()" />
+        <img :src="albumPicture" alt="" @error="getAlbumPicture()" />
         <div class="img-mask"></div>
       </div>
       <div class="main-info">
