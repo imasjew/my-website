@@ -247,7 +247,7 @@ export default {
   .backward-button {
     position: absolute;
     left: 24px;
-    top: 48px;
+    top: 18px;
     i {
       font-size: 24px;
       color: #909399;
