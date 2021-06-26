@@ -18,7 +18,7 @@
         <i class="el-icon-download afterward" @click="switchSong(2)"></i>
       </div>
       <div class="album-picture">
-        <img :src="albumPicture" alt="" @error="getAlbumPicture()" />
+        <img :src="albumPicture" alt="" @error="getReloadSong()" />
         <div class="img-mask"></div>
       </div>
       <div class="main-info">
@@ -111,7 +111,6 @@ export default {
     return {
       audio: "", // 音频资源
       currentIndex: 0, // 当前播放编号
-      albumPicture: null, // 专辑封面
       songList: [], // 歌单
       songReady: false, // 歌曲加载状态
       isPlaying: false, // 播放状态
@@ -137,9 +136,6 @@ export default {
     Bus.$on("playerAddSong", (song) => {
       this.addSong(song);
     });
-    Bus.$on("setReloadSong", (song) => {
-      this.setReloadSong(song);
-    });
     Bus.$on("skipByLyric", (process) => {
       this.setProcessByLyric(process);
     });
@@ -160,6 +156,12 @@ export default {
         return "";
       }
       return this.songList[this.currentIndex].url || "";
+    },
+    albumPicture() {
+      if (this.songList.length === 0) {
+        return "";
+      }
+      return this.songList[this.currentIndex].albumPicture || "";
     },
     playState() {
       const { songReady, isPlaying } = this;
@@ -197,7 +199,6 @@ export default {
   watch: {
     currentIndex(index) {
       localStorage.setItem("currentIndex", index);
-      this.getAlbumPicture();
     },
     currentVolume(volume) {
       const volumeRate = volume / this.maxVolume;
@@ -225,31 +226,11 @@ export default {
     },
   },
   methods: {
-    audioLoaded() {
-      this.songReady = true;
-      this.checkCurrentProcess();
-    },
-    getReloadSong() {
-      this.songReady = false;
-      if (this.songList.length === 0) {
-        return;
-      }
-      const payload = {
-        songInfo: this.songList[this.currentIndex],
-        onlyUpdate: true,
-      };
-      Bus.$emit("getSongUrl", payload);
-    },
-    setReloadSong(song) {
-      // 必须使用$set以使computed响应变化
-      this.$set(this.songList, this.currentIndex, song);
-    },
     getStorageInfo() {
       const storageList = localStorage.getItem("playList");
       if (storageList !== null) {
         this.songList = JSON.parse(storageList);
         this.currentIndex = Number(localStorage.getItem("currentIndex"));
-        this.getAlbumPicture();
       } else {
         localStorage.setItem("currentIndex", 0);
       }
@@ -268,10 +249,20 @@ export default {
         localStorage.setItem("loopMode", this.loopMode);
       }
     },
-    addSong(song) {
-      if (!song.url) {
-        this.pauseSong();
+    audioLoaded() {
+      this.songReady = true;
+      this.checkCurrentProcess();
+    },
+    getReloadSong() {
+      this.songReady = false;
+      // 歌单为空时触发，强行获取id会报错
+      if (this.songList.length === 0) {
+        return;
       }
+      const songId = this.songList[this.currentIndex].id;
+      Bus.$emit("addSongDetail", songId);
+    },
+    addSong(song) {
       if (this.songList.length !== 0) {
         this.checkDuplicate(song);
       } else {
@@ -284,6 +275,8 @@ export default {
       const listLength = this.songList.length;
       for (let i = 0; i <= listLength; i++) {
         if (song.id === this.songList[i].id) {
+          // 代替push，才能让computed监听到数组变化
+          this.$set(this.songList, i, song);
           this.currentIndex = i;
           i = listLength;
           return;
@@ -308,18 +301,6 @@ export default {
       if (this.$route.name === "musiclyric") {
         Bus.$emit("goToLyric", this.songList[this.currentIndex].id);
       }
-    },
-    getAlbumPicture() {
-      console.log('get album picture')
-      const currentSong = this.songList[this.currentIndex];
-      httpService.getSongDetail(currentSong.id).then(
-        (res) => {
-          this.albumPicture = res.songs[0].al.picUrl;
-        },
-        () => {
-          console.log("图片没找到");
-        }
-      );
     },
     pauseSong() {
       this.isPlaying = false;

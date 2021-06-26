@@ -29,7 +29,7 @@
                 'el-icon-video-play',
                 { playing: scope.$index == currentIndex },
               ]"
-              @click="addSong(scope.$index, scope.row, false)"
+              @click="addSong(scope.$index, scope.row.id, false)"
             ></i>
           </template>
         </el-table-column>
@@ -42,7 +42,7 @@
           <template slot-scope="scope">
             <span
               class="song-title"
-              @click="addSong(scope.$index, scope.row, true)"
+              @click="addSong(scope.$index, scope.row.id, true)"
               >{{ scope.row.title }}</span
             >
           </template>
@@ -79,8 +79,6 @@ export default {
   name: "musiclist",
   data() {
     return {
-      audioUrl: "",
-      audio: "",
       input: "",
       currentIndex: null,
       tableData: [],
@@ -104,7 +102,7 @@ export default {
           this.formatSongList(songs);
         },
         (err) => {
-          console.log("请求失败", err);
+          console.log("songList请求失败", err);
         }
       );
     },
@@ -117,22 +115,17 @@ export default {
         song.title = songs[i].name;
         song.duration = songs[i].duration / 1000;
         song.author = songs[i].artists[0].name;
-        song.albumId = songs[i].album.id;
         song.albumName = songs[i].album.name;
         this.tableData.push(song);
       }
     },
-    addSong(index, song, goToLyric) {
-      httpService.checkSong(song.id).then(
+    addSong(index, songId, goToLyric) {
+      httpService.checkSong(songId).then(
         () => {
           this.currentIndex = index;
-          const payload = {
-            songInfo: song,
-            onlyUpdate: false,
-          };
-          Bus.$emit("getSongUrl", payload);
-          if (goToLyric) {
-            Bus.$emit("goToLyric", song.id);
+          Bus.$emit('addSongDetail', songId);
+          if(goToLyric) {
+            Bus.$emit("goToLyric", songId);
           }
         },
         (err) => {
@@ -178,7 +171,6 @@ export default {
       color: #555;
       text-shadow: 0 0 1px #555;
     }
-
     .playing {
       color: #c44;
       text-shadow: 0 0 1px #c44;
@@ -188,7 +180,6 @@ export default {
       text-shadow: 0 0 1px #c44;
     }
   }
-
   .el-table::before {
     height: 0; // 去除底部白线，会遮盖底部组件
   }

@@ -38,8 +38,8 @@ export default {
   },
   methods: {
     setBusListener() {
-      Bus.$on("getSongUrl", (payload) => {
-        this.getSongUrl(payload.songInfo, payload.onlyUpdate);
+      Bus.$on("addSongDetail", (songId) => {
+        this.addSongDetail(songId);
       });
       Bus.$on("goToLyric", (songId) => {
         this.goToLyric(songId);
@@ -47,23 +47,33 @@ export default {
       Bus.$on("goToMusicList", (songTitle) => {
         this.goToMusicList(songTitle);
       });
-
     },
-    getSongUrl(songInfo, onlyUpdate) {
-      httpService.getSongUrl(songInfo.id).then((res) => {
-        const song = {
-          ...songInfo,
-          title: songInfo.title,
-          url: res.data[0].url,
-        };
-        // onlyUpdate代表songUrl过期，仅需替换为重新获取的返回即可
-        if (onlyUpdate) {
-          Bus.$emit("setReloadSong", song);
-        } else {
-          Bus.$emit("playerAddSong", song);
+    addSongDetail(songId) {
+      httpService.getFullSongDetail(songId).then(
+        (res) => {
+          const songDetail = this.formatSongDetail(res);
+          Bus.$emit("playerAddSong", songDetail);
+        },
+        (err) => {
+          console.log("getSongDetail获取失败", err);
         }
-      });
+      );
     },
+    formatSongDetail(originInfo) {
+      const songBasicInfo = originInfo[0].songs[0];
+      const songUrl = originInfo[1].data[0].url;
+      const song = {
+        title: songBasicInfo.name,
+        duration: songBasicInfo.dt / 1000,
+        author: songBasicInfo.ar[0].name,
+        albumName: songBasicInfo.al.name,
+        id: songBasicInfo.id,
+        albumPicture: songBasicInfo.al.picUrl,
+        url: songUrl,
+      };
+      return song;
+    },
+
     goToPage(key) {
       this.$router.push("/home/music/" + key);
     },
@@ -79,9 +89,9 @@ export default {
     goToMusicList(title) {
       this.$router.push({
         path: "/home/music/musiclist",
-        query: { name: title }
-      })
-    }
+        query: { name: title },
+      });
+    },
   },
 };
 </script>
