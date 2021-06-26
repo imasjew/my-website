@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page-wrapper">
     <!-- <button @click="goToPage('musiclist')">list</button>
     <button @click="goToPage('musiclyric')">song</button>
     <button @click="triggerController()">controller</button> -->
@@ -97,6 +97,10 @@ export default {
 </script>
 
 <style lang="less">
+.page-wrapper {
+  position: relative;
+  width: 100%;
+}
 .song-controller {
   position: fixed;
   bottom: 0;
