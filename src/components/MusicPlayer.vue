@@ -121,7 +121,7 @@ export default {
       processChecker: null, // 走条计时器
       volumeOn: true, // 音量开关
       showVolumeController: false, // 显示音量滑块
-      currentVolume: 100, // 当前音量
+      currentVolume: 70, // 当前音量
       maxVolume: 100, // 最大音量
       volumeOnIcon: "/static/icon/volume-on.png", // 音量开图标
       volumeOffIcon: "/static/icon/volume-off.png", // 音量关图标
