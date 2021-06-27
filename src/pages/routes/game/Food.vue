@@ -33,7 +33,7 @@ export default {
     showEffect(type) {
       const effectWrapper = this.$refs.effect;
       const source = this.$refs.food.lastChild.cloneNode();
-      source.className = type + '-effect';
+      source.className = type + "-effect";
       effectWrapper.appendChild(source);
       setTimeout(() => {
         effectWrapper.removeChild(effectWrapper.lastChild);
@@ -41,7 +41,7 @@ export default {
     },
     createFood() {
       if (this.renderPlace.length > 0) {
-        this.showEffect('remove');
+        this.showEffect("remove");
       }
       this.renderPlace = this.mapPlace;
       do {
@@ -68,19 +68,22 @@ export default {
       this.renderPlace.splice(randomIndex, 1);
     },
     renderFood() {
-      this.removeFood();
-      const foodWrapper = this.$refs.food;
-      const food = document.createElement("div");
-      const foodStyle = food.style;
-      foodStyle.position = "absolute";
-      foodStyle.width = this.scale + "px";
-      foodStyle.height = this.scale + "px";
-      foodStyle.left = this.position[0] * this.scale + "px";
-      foodStyle.top = this.position[1] * this.scale + "px";
-      foodStyle.backgroundColor = "gold";
-      foodStyle.borderRadius = "2px";
-      foodWrapper.appendChild(food);
-      this.showEffect('create');
+      // 需等待父组件绑定的scale属性更新后再执行
+      this.$nextTick(() => {
+        this.removeFood();
+        const foodWrapper = this.$refs.food;
+        const food = document.createElement("div");
+        const foodStyle = food.style;
+        foodStyle.position = "absolute";
+        foodStyle.width = this.scale + "px";
+        foodStyle.height = this.scale + "px";
+        foodStyle.left = this.position[0] * this.scale + "px";
+        foodStyle.top = this.position[1] * this.scale + "px";
+        foodStyle.backgroundColor = "gold";
+        foodStyle.borderRadius = "2px";
+        foodWrapper.appendChild(food);
+        this.showEffect("create");
+      });
     },
     removeFood() {
       const foodWrapper = this.$refs.food;
@@ -93,9 +96,8 @@ export default {
 </script>
 
 <style lang="less">
-
 .remove-effect {
-  animation: remove-animation .6s ease 0s;
+  animation: remove-animation 0.6s ease 0s;
 }
 @keyframes remove-animation {
   0% {
@@ -103,13 +105,13 @@ export default {
   }
   100% {
     background-color: green;
-    transform: scale(.2);
+    transform: scale(0.2);
     opacity: 0;
   }
 }
 
 .create-effect {
-  animation: create-animation .6s ease 0s;
+  animation: create-animation 0.6s ease 0s;
 }
 @keyframes create-animation {
   0% {

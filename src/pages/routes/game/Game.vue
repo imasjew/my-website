@@ -1,6 +1,5 @@
 <template>
   <div class="page-wrapper">
-    <h1>贪吃蛇</h1>
     <div class="game-wrapper" ref="gameWrapper">
       <div class="speed-zone" ref="speedZone"></div>
       <div class="game-zone" ref="gameZone">
@@ -19,7 +18,7 @@
           @checkFoodOnSnake="checkFoodOnSnake($event)"
         ></food>
         <div class="mask" v-if="!isGamming" @click="startGame()">
-          <span v-html="maskWord"></span>
+          <div v-html="maskWord" class="mask-word"></div>
         </div>
       </div>
       <div class="info-zone" ref="infoZone">
@@ -35,12 +34,26 @@
         <div class="info-item">
           <div>
             <div>SPEED</div>
-            <input v-model="snakeSpeed" type="number" max="20" min="1"><span class="speed-info"> steps/s</span>
+            <input v-model="snakeSpeed" type="number" max="20" min="1" /><span
+              class="speed-info"
+            >
+              steps/s</span
+            >
           </div>
 
           <div>MAP SIZE</div>
           <div>
-            <input v-model="mapSize[0]" type="number" max="60" min="15">&times;<input v-model="mapSize[1]" type="number" max="60" min="15">
+            <input
+              v-model="mapSize[0]"
+              type="number"
+              max="60"
+              min="15"
+            />&times;<input
+              v-model="mapSize[1]"
+              type="number"
+              max="60"
+              min="15"
+            />
           </div>
           <button @click="resetGame()" id="restart-btn">RESTART</button>
         </div>
@@ -70,14 +83,14 @@ export default {
       snakeSpeed: 9, // 蛇移动速度
       infoWidth: 120, // 信息栏宽度
       isGamming: false, //游戏状态
-      maskWord: 'CLICK or press ENTER to start!', // 蒙版提示
+      maskWord: "CLICK or press ENTER to start!", // 蒙版提示
       direction: 39, // 默认蛇的运行向右
       snake, // snake组件通讯
       food, // food组件通讯
       time: 0, // 游戏时间
-      timeInterval: '', // 游戏时间计时器
+      timeInterval: "", // 游戏时间计时器
       score: 0, // 游戏得分
-      restartBtn: '' // 重置按钮，用于点击后自动失焦避免按回车时触发
+      restartBtn: "", // 重置按钮，用于点击后自动失焦避免按回车时触发
     };
   },
   mounted() {
@@ -120,11 +133,22 @@ export default {
         this.mapSize[0] * this.scale + this.infoWidth + 10 + "px";
       gameWrapper.style.height = this.mapSize[1] * this.scale + 10 + "px";
     },
+    // 大地图下缩小比例以免溢出页面
+    checkMapSize() {
+      if (this.mapSize[1] >= 45) {
+        this.scale = 16;
+      } else {
+        this.scale = 20;
+      }
+      this.renderMap();
+    },
     startGame() {
+      this.checkMapSize();
       this.isGamming = true;
       this.score = 0;
       this.direction = 39;
       this.snake.currentDirection = 39; // 防止死亡时direction为左情况重开游戏初始化方向被snake.checkDirection()过滤
+
       this.snake.createSnake();
       this.food.createFood();
       this.time = 0;
@@ -134,16 +158,16 @@ export default {
       }, 1000);
     },
     resetGame() {
+      this.checkMapSize();
       this.isGamming = false;
-      this.maskWord = 'CLICK or press ENTER to start!';
+      this.maskWord = "CLICK or press ENTER to start!";
       this.food.resetMapPlace();
       this.food.removeFood();
       this.snake.deleteSnake();
-      this.renderMap();
       clearInterval(this.timeInterval);
       this.time = 0;
       this.score = 0;
-      document.getElementById('restart-btn').blur(); // 点击按钮后按钮获得焦点，此时按回车会误触发reset
+      document.getElementById("restart-btn").blur(); // 点击按钮后按钮获得焦点，此时按回车会误触发reset
     },
     checkSnakeStatus(snakeBody) {
       this.checkSnakeAlive(snakeBody);
@@ -191,8 +215,9 @@ export default {
     },
     alertWord(info) {
       clearInterval(this.timeInterval);
-      this.isGamming = false
-      this.maskWord = 'You Dead! ' + info + '<br>CLICK or press ENTER to restart!'
+      this.isGamming = false;
+      this.maskWord =
+        "You Dead! " + info + "<br>CLICK or press ENTER to restart!";
     },
     test() {
       const that = this;
@@ -204,12 +229,20 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
-.game-wrapper {
+<style lang="less" >
+.page-wrapper {
   position: relative;
+  width: 100%;
+}
+.game-wrapper {
+  position: absolute;
   margin: auto;
-  width: 630px;
-  height: 510px;
+  // width: 630px;
+  // height: 510px;
+  top: -24px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: #ccc;
   box-sizing: content-box;
   font-size: 0; // 解决子元素空隙
@@ -229,14 +262,17 @@ export default {
       height: 100%;
       text-align: center;
       color: #ccd;
-      font-size: 26px;
+
       font-weight: 900;
       background-color: rgba(10, 10, 100, 0.6);
       box-sizing: border-box;
       cursor: default;
-      span {
+      .mask-word {
         position: relative;
-        top: 33%;
+        top: 50%;
+        transform: translateY(-50%);
+        line-height: 26px;
+        font-size: 26px;
       }
     }
   }
