@@ -10,11 +10,25 @@ axios.interceptors.response.use(function (response) {
   console.log("响应拦截器 成功");
   return response.data;
 }, function (error) {
-  console.log("响应拦截器 失败");
-  return Promise.reject(error);
+  console.log("响应拦截器 失败", error.response);
+  return Promise.reject(error.response);
 });
 
 const httpService = {
+  login(name, pswd) {
+    const data = {
+      name: name,
+      pswd: pswd
+    }
+    return axios.post(APIURL.login, data)
+  },
+  register(name, pswd) {
+    const data = {
+      name: name,
+      pswd: pswd
+    }
+    return axios.post(APIURL.register, data)
+  },
   getSongList(key) {
     return axios.get(APIURL.song_list + key)
   },

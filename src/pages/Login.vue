@@ -15,10 +15,8 @@
           <el-input v-model="ruleForm.pswd"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')"
-            >登录</el-button
-          >
-          <el-button>注册</el-button>
+          <el-button type="primary" @click="login()">登录</el-button>
+          <el-button @click="register()">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -26,6 +24,7 @@
 </template>
 
 <script>
+import httpService from "@/service/http.service";
 export default {
   name: "login",
   data() {
@@ -57,16 +56,71 @@ export default {
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+    checkValid() {
+      return this.$refs["ruleForm"].validate();
+    },
+    login() {
+      this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
-          localStorage.setItem('username', this.ruleForm.name)
-          this.$router.push('home/dashboard')
-          console.log('ok')
+          httpService.login(this.ruleForm.name, this.ruleForm.pswd).then(
+            (res) => {
+              localStorage.setItem("username", this.ruleForm.name);
+              this.$router.push("home/dashboard");
+              this.$nextTick(() => {
+                this.showSuccess("登录成功", res);
+              });
+            },
+            (err) => {
+              this.showReject("登录失败", err.data);
+            }
+          );
         } else {
-          console.log("登录失败");
-          return false;
+          console.log("格式不规范");
         }
+      });
+    },
+    register() {
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          httpService.register(this.ruleForm.name, this.ruleForm.pswd).then(
+            (res) => {
+              this.showSuccess("注册成功", "正在自动登录");
+              this.login();
+            },
+            (err) => {
+              this.showReject("注册失败", err.data);
+            }
+          );
+        } else {
+          console.log("格式不规范");
+        }
+      });
+    },
+    // login() {
+    //   this.$refs["ruleForm"].validate((valid) => {
+    //     if (valid) {
+    //       localStorage.setItem("username", this.ruleForm.name);
+    //       this.$router.push("home/dashboard");
+    //       this.$nextTick(() => {
+    //         this.showSuccess("登录成功", "");
+    //       });
+    //     } else {
+    //       console.log("登录失败");
+    //       return false;
+    //     }
+    //   });
+    // },
+    showSuccess(title, msg) {
+      this.$notify({
+        title: title,
+        message: msg,
+        type: "success",
+      });
+    },
+    showReject(title, msg) {
+      this.$notify.info({
+        title: title,
+        message: msg,
       });
     },
   },
@@ -76,7 +130,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .login-page {
-    margin-top: 60px;
+  margin-top: 60px;
 }
 h1,
 h2 {
