@@ -9,7 +9,7 @@ import MusicList from '@/pages/routes/music/Musiclist'
 import MusicLyric from '@/pages/routes/music/MusicLyric'
 import Game from '@/pages/routes/game/Game'
 import Errorpage from '@/pages/errorpage'
-
+import accountService from "@/service/account.service";
 import VueRouter from 'vue-router'
 
 Vue.use(Router)
@@ -20,8 +20,9 @@ VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
 
-function isLoggedIn () {
-  return localStorage.getItem('username') !== null;
+function isLoggedIn() {
+  //   return localStorage.getItem('username') !== null;
+  return accountService.getToken();
 }
 
 const router = new Router({
@@ -41,7 +42,8 @@ const router = new Router({
         { path: '', redirect: 'shopping' },
         { path: 'dashboard', name: 'dashboard', component: Dashboard },
         { path: 'shopping', name: 'shopping', component: Shopping },
-        { path: 'music', name: 'music', component: Music,
+        {
+          path: 'music', name: 'music', component: Music,
           children: [
             { path: '', redirect: 'musiclist' },
             { path: 'musiclist', name: 'musiclist', component: MusicList },
@@ -59,8 +61,10 @@ const router = new Router({
   ],
 })
 
-router.beforeEach(async(to, from, next) => {
-  if (!isLoggedIn() && to.name !== 'login' && to.name !== 'errorpage') {next({ name: 'errorpage' })}
+router.beforeEach(async (to, from, next) => {
+  if (!isLoggedIn() && to.name !== 'login' && to.name !== 'errorpage') {
+    next({ name: 'errorpage' })
+  }
   else next()
 })
 

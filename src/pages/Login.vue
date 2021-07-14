@@ -25,6 +25,7 @@
 
 <script>
 import httpService from "@/service/http.service";
+import accountService from "@/service/account.service";
 export default {
   name: "login",
   data() {
@@ -64,14 +65,14 @@ export default {
         if (valid) {
           httpService.login(this.ruleForm.name, this.ruleForm.pswd).then(
             (res) => {
-              localStorage.setItem("username", this.ruleForm.name);
+              accountService.login(this.ruleForm.name, res.token)
               this.$router.push("home/dashboard");
               this.$nextTick(() => {
-                this.showSuccess("登录成功", res);
+                this.showSuccess("登录成功");
               });
             },
             (err) => {
-              this.showReject("登录失败", err.data);
+              this.showReject("登录失败", err.data.message);
             }
           );
         } else {
@@ -88,7 +89,7 @@ export default {
               this.login();
             },
             (err) => {
-              this.showReject("注册失败", err.data);
+              this.showReject("注册失败", err.data.message);
             }
           );
         } else {
@@ -96,20 +97,6 @@ export default {
         }
       });
     },
-    // login() {
-    //   this.$refs["ruleForm"].validate((valid) => {
-    //     if (valid) {
-    //       localStorage.setItem("username", this.ruleForm.name);
-    //       this.$router.push("home/dashboard");
-    //       this.$nextTick(() => {
-    //         this.showSuccess("登录成功", "");
-    //       });
-    //     } else {
-    //       console.log("登录失败");
-    //       return false;
-    //     }
-    //   });
-    // },
     showSuccess(title, msg) {
       this.$notify({
         title: title,

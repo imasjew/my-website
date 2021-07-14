@@ -1,4 +1,6 @@
-import { APIURL } from './apiurl.config';
+import APIURL from './apiurl.config';
+import accountService from "@/service/account.service";
+
 import axios from 'axios';
 
 // function request(config, success, failure) {
@@ -6,15 +8,38 @@ import axios from 'axios';
 //     baseURL: ''
 //   })
 // }
-axios.interceptors.response.use(function (response) {
+
+// 这样也行
+// axios.defaults.withCredentials = false;
+// axios.defaults.headers.common['Authorization'] = document.cookie || '';
+// axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';//配置请求头
+
+axios.interceptors.request.use(config => {
+  const token = accountService.getToken();
+  if (token) {
+    config.headers['Authorization'] = 'Bearer ' + token;
+  }
+  return config
+}, error => {
+  return Promise.reject(error.response);
+})
+
+axios.interceptors.response.use(response => {
   console.log("响应拦截器 成功");
   return response.data;
-}, function (error) {
+}, error => {
   console.log("响应拦截器 失败", error.response);
   return Promise.reject(error.response);
 });
 
 const httpService = {
+  register(name, pswd) {
+    const data = {
+      name: name,
+      pswd: pswd
+    }
+    return axios.post(APIURL.register, data)
+  },
   login(name, pswd) {
     const data = {
       name: name,
@@ -22,12 +47,8 @@ const httpService = {
     }
     return axios.post(APIURL.login, data)
   },
-  register(name, pswd) {
-    const data = {
-      name: name,
-      pswd: pswd
-    }
-    return axios.post(APIURL.register, data)
+  auth() {
+    return axios.post(APIURL.auth, {})
   },
   getSongList(key) {
     return axios.get(APIURL.song_list + key)

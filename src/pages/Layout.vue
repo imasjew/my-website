@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import accountService from "@/service/account.service";
 export default {
   name: "layout",
   data() {
@@ -41,7 +42,7 @@ export default {
   methods: {
     handleSelect(key) {
       if (key === "logout") {
-        localStorage.removeItem("username");
+        accountService.logout();
         this.$router.push("/login");
         return;
       }

@@ -2,9 +2,11 @@ const LOCALMUSICURL = 'http://localhost:3000/';
 const ACCOUNTURL = 'http://localhost:8081/';
 // 已失效 const MUSICURL = 'http://www.hjmin.com/';
 
-export const APIURL = {
-  login: ACCOUNTURL + 'login',
+
+const APIURL = {
   register: ACCOUNTURL + 'register',
+  login: ACCOUNTURL + 'login',
+  auth: ACCOUNTURL + 'auth',
   song_list: LOCALMUSICURL + 'search?keywords=',
   song_url: LOCALMUSICURL + 'song/url?id=',
   check_song: LOCALMUSICURL + 'check/music?id=',
@@ -12,3 +14,5 @@ export const APIURL = {
   get_lyric: LOCALMUSICURL + 'lyric?id=',
 
 }
+
+export default APIURL
