@@ -117,7 +117,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .login-page {
-  margin-top: 60px;
+  padding-top: 60px;
 }
 h1,
 h2 {
