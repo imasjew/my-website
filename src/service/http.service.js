@@ -14,15 +14,16 @@ import axios from 'axios';
 // axios.defaults.headers.common['Authorization'] = document.cookie || '';
 // axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';//配置请求头
 
-axios.interceptors.request.use(config => {
-  const token = accountService.getToken();
-  if (token) {
-    config.headers['Authorization'] = 'Bearer ' + token;
-  }
-  return config
-}, error => {
-  return Promise.reject(error.response);
-})
+// 只有验证接口需要用到token，网易接口用了反而报错
+// axios.interceptors.request.use(config => {
+//   const token = accountService.getToken();
+//   if (token) {
+//     config.headers['Authorization'] = 'Bearer ' + token;
+//   }
+//   return config
+// }, error => {
+//   return Promise.reject(error.response);
+// })
 
 axios.interceptors.response.use(response => {
   console.log("响应拦截器 成功");
@@ -31,6 +32,17 @@ axios.interceptors.response.use(response => {
   console.log("响应拦截器 失败", error.response);
   return Promise.reject(error.response);
 });
+
+function setToken() {
+  const token = accountService.getToken();
+  if (token) {
+    return {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    }
+  }
+}
 
 const httpService = {
   register(name, pswd) {
@@ -48,7 +60,7 @@ const httpService = {
     return axios.post(APIURL.login, data)
   },
   auth() {
-    return axios.post(APIURL.auth, {})
+    return axios.post(APIURL.auth, {}, setToken())
   },
   getSongList(key) {
     return axios.get(APIURL.song_list + key)
