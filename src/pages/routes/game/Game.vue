@@ -69,14 +69,6 @@ export default {
   components: { snake, food },
   name: "game",
   data() {
-    var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"));
-      } else {
-        // 放正则
-        callback();
-      }
-    };
     return {
       mapSize: [25, 25], // 地图范围
       scale: 20, // 游戏图像尺寸
@@ -126,7 +118,6 @@ export default {
     renderMap() {
       const gameWrapper = this.$refs.gameWrapper;
       const gameZone = this.$refs.gameZone;
-      const infoZone = this.$refs.infoZone.style;
       gameZone.style.width = this.mapSize[0] * this.scale + "px";
       gameZone.style.height = this.mapSize[1] * this.scale + "px";
       gameWrapper.style.width =

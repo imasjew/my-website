@@ -62,7 +62,6 @@ export default {
     },
     autoMove() {
       clearInterval(this.movingInterval);
-      const _this = this;
       this.movingInterval = setInterval(() => {
         this.move();
       }, 1000/this.speed);

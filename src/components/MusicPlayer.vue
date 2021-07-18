@@ -102,7 +102,6 @@
 <script>
 import playlist from "@/components/PlayList.vue";
 import Slider from "@/components/Slider.vue";
-import httpService from "@/service/http.service";
 import Bus from "@/eventBus.js";
 export default {
   name: "musicplayer",
