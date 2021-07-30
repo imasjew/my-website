@@ -28,11 +28,6 @@
 export default {
   name: "playlist",
   props: ["songList", "currentIndex"],
-  data() {
-    return {
-      isPlaying: false,
-    };
-  },
   methods: {
     remove(index) {
       this.$emit("remove", index);

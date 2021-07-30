@@ -99,7 +99,9 @@ export default {
       httpService.getSongList(this.input).then(
         (res) => {
           const songs = res.result.songs;
-          this.formatSongList(songs);
+          if (songs) {
+            this.formatSongList(songs);
+          }
         },
         (err) => {
           console.log("songList请求失败", err);
